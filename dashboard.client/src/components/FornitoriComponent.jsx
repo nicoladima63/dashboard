@@ -6,6 +6,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
 import {
     GridRowModes,
     DataGrid,
@@ -53,8 +56,7 @@ export default function GridComponent({ fornitori }) {
     const [rows, setRows] = useState([]); // Stato per i fornitori
     const [mode, setMode] = useState('view'); // Stato per la modalità (insert/view)
     const [rowModesModel, setRowModesModel] = React.useState({});
-
-
+    const [snackbar, setSnackbar] = React.useState(null);
 
     useEffect(() => {
         if (rows.length === 0 && initialLoad.current) {
@@ -64,6 +66,7 @@ export default function GridComponent({ fornitori }) {
         }
     }, [rows]);
 
+    const handleCloseSnackbar = () => setSnackbar(null);
 
     const handleClickAddRecord = () => {
         const id = randomId();
@@ -91,23 +94,8 @@ export default function GridComponent({ fornitori }) {
         setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
     };
 
-    const handleSaveClick2 = (id) => () => {
+    const handleSaveClick = (id) => () => {
         setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-    };
-    const handleSaveClick = (id) => async ()=>{
-        try {
-            // Recupera la riga modificata corrispondente all'ID fornito
-            const modifiedRow = rows.find((row) => row.id === id);
-            console.log('modifiedrow', modifiedRow)
-            // Invia i dati modificati al server per la persistenza
-            const response = await Services.create('fornitori', modifiedRow);
-
-            // Gestisci la risposta del server
-            console.log('Modifica salvata con successo:', response);
-        } catch (error) {
-            // Gestisci gli errori
-            console.error('Errore durante il salvataggio della modifica:', error);
-        }
     };
 
     const handleDeleteClick = (id) => () => {
@@ -126,11 +114,36 @@ export default function GridComponent({ fornitori }) {
         }
     };
 
-    const processRowUpdate = (newRow) => {
+    const processRowUpdate2 = async (newRow) => {
         const updatedRow = { ...newRow, isNew: false };
-        setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-        return updatedRow;
+        console.log('newRow',newRow)
+        try {
+            // Attendere l'operazione di creazione prima di procedere
+            const response = await Services.create('fornitori', newRow); // Invia la modifica al server per la persistenza dei fornitori
+            setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+            return updatedRow;
+        } catch (error) {
+            // Gestione degli errori
+            console.error("Errore durante la creazione del record:", error);
+            // Potresti voler lanciare l'errore qui per gestirlo più avanti
+            throw error;
+        }
     };
+    
+    const processRowUpdate = React.useCallback(
+        async (newRow) => {
+            // Make the HTTP request to save in the backend
+            const response = await Services.create('fornitori',newRow);
+            setSnackbar({ children: 'User successfully saved', severity: 'success' });
+            return response;
+        },
+        [Services],
+    );
+
+    const handleProcessRowUpdateError = React.useCallback((error) => {
+        setSnackbar({ children: error.message, severity: 'error' });
+    }, []);
+
 
     const handleRowModesModelChange = (newRowModesModel) => {
         setRowModesModel(newRowModesModel);
@@ -178,7 +191,7 @@ export default function GridComponent({ fornitori }) {
         {
             field: 'actions',
             type: 'actions',
-            headerName: 'Actions',
+            headerName: 'Azioni',
             width: 100,
             cellClassName: 'actions',
             getActions: ({ id }) => {
@@ -188,7 +201,7 @@ export default function GridComponent({ fornitori }) {
                     return [
                         <GridActionsCellItem
                             icon={<SaveIcon />}
-                            label="Save"
+                            label="Salva"
                             sx={{
                                 color: 'primary.main',
                             }}
@@ -196,7 +209,7 @@ export default function GridComponent({ fornitori }) {
                         />,
                         <GridActionsCellItem
                             icon={<CancelIcon />}
-                            label="Cancel"
+                            label="Annulla"
                             className="textPrimary"
                             onClick={handleCancelClick(id)}
                             color="inherit"
@@ -207,14 +220,14 @@ export default function GridComponent({ fornitori }) {
                 return [
                     <GridActionsCellItem
                         icon={<EditIcon />}
-                        label="Edit"
+                        label="Modifica"
                         className="textPrimary"
                         onClick={handleEditClick(id)}
                         color="inherit"
                     />,
                     <GridActionsCellItem
                         icon={<DeleteIcon />}
-                        label="Delete"
+                        label="Cancella"
                         onClick={handleDeleteClick(id)}
                         color="inherit"
                     />,
@@ -235,6 +248,7 @@ export default function GridComponent({ fornitori }) {
                 onRowModesModelChange={handleRowModesModelChange}
                 onRowEditStop={handleRowEditStop}
                 processRowUpdate={processRowUpdate}
+                onProcessRowUpdateError={handleProcessRowUpdateError}
                 slots={{
                     toolbar: EditToolbar,
                 }}
@@ -242,6 +256,16 @@ export default function GridComponent({ fornitori }) {
                     toolbar: { setRows, setRowModesModel },
                 }}
             />
+            {!!snackbar && (
+                <Snackbar
+                    open
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    onClose={handleCloseSnackbar}
+                    autoHideDuration={6000}
+                >
+                    <Alert {...snackbar} onClose={handleCloseSnackbar} />
+                </Snackbar>
+            )}
         </Box>     
     );
 }
