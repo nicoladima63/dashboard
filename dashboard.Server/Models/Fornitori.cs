@@ -25,6 +25,6 @@ namespace dashboard.Server.Models
         [Column(TypeName = "nvarchar(max)")]
         public string? Colore { get; set; }
 
-        public ICollection<Lavorazioni>? LavorazioniFornite { get; set; }
+        //public ICollection<Lavorazioni>? LavorazioniFornite { get; set; }
     }
 }

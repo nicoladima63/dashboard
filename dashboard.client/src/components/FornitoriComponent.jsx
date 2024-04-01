@@ -16,13 +16,6 @@ import {
     GridActionsCellItem,
     GridRowEditStopReasons,
 } from '@mui/x-data-grid';
-import {
-    randomCreatedDate,
-    randomTraderName,
-    randomId,
-    randomArrayItem,
-} from '@mui/x-data-grid-generator';
-import DataFormatter from '../Services/DataFormatter'
 import Services from '../Services/Services';
 
 
@@ -32,12 +25,13 @@ function EditToolbar(props) {
     const { setRows, setRowModesModel } = props;
 
     const handleClick = () => {
-        const id = randomId();
-        setRows((oldRows) => [...oldRows, { id, name: '', age: '', isNew: true }]);
+        const id = 0;
+        setRows((oldRows) => [...oldRows, {id, nome: '', email: '', url: '', telefono: '', colore: '', lavorazioniFornite: '', isNew: true }]);
         setRowModesModel((oldModel) => ({
             ...oldModel,
-            [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
+            [id]: { mode: GridRowModes.Edit, fieldToFocus: 'nome' },
         }));
+
     };
 
     return (
@@ -52,31 +46,22 @@ export default function GridComponent({ fornitori }) {
     //console.log('GridComponent fornitori', fornitori);
     //console.log('GridComponent tableFields', tableFields);
     //console.log('GridComponent colonne', colonne)
-    const initialLoad = useRef(true);
-    const [rows, setRows] = useState([]); // Stato per i fornitori
+    const [rows, setRows] = useState(fornitori); // Stato per i fornitori
     const [mode, setMode] = useState('view'); // Stato per la modalità (insert/view)
     const [rowModesModel, setRowModesModel] = React.useState({});
     const [snackbar, setSnackbar] = React.useState(null);
 
-    useEffect(() => {
-        if (rows.length === 0 && initialLoad.current) {
-            // Simula il click del pulsante "Aggiungi record" solo al caricamento iniziale
-            handleClickAddRecord();
-            initialLoad.current = false;
-        }
-    }, [rows]);
 
     const handleCloseSnackbar = () => setSnackbar(null);
 
     const handleClickAddRecord = () => {
-        const id = randomId();
+        const id = 0;
         setRows((oldRows) => [...oldRows, { id, nome: '', email: '', url: '', telefono: '', colore: '', lavorazioniFornite: '', isNew: true }]);
         setRowModesModel((oldModel) => ({
             ...oldModel,
             [id]: { mode: GridRowModes.Edit, fieldToFocus: 'nome' },
         }));
     };
-
 
     const handleRowEditStart = (params) => {
         if (mode === 'view') {
@@ -114,31 +99,25 @@ export default function GridComponent({ fornitori }) {
         }
     };
 
-    const processRowUpdate2 = async (newRow) => {
-        const updatedRow = { ...newRow, isNew: false };
-        console.log('newRow',newRow)
-        try {
-            // Attendere l'operazione di creazione prima di procedere
-            const response = await Services.create('fornitori', newRow); // Invia la modifica al server per la persistenza dei fornitori
-            setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-            return updatedRow;
-        } catch (error) {
-            // Gestione degli errori
-            console.error("Errore durante la creazione del record:", error);
-            // Potresti voler lanciare l'errore qui per gestirlo più avanti
-            throw error;
-        }
-    };
-    
     const processRowUpdate = React.useCallback(
         async (newRow) => {
-            // Make the HTTP request to save in the backend
-            const response = await Services.create('fornitori',newRow);
-            setSnackbar({ children: 'User successfully saved', severity: 'success' });
-            return response;
+            const updatedRow = { ...newRow, isNew: false };
+            try {
+                // Attendere l'operazione di creazione prima di procedere
+                const response = await Services.create('fornitori', newRow); // Invia la modifica al server per la persistenza dei fornitori
+                setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+                setSnackbar({ children: 'Record aggiunto con successo', severity: 'success' });
+                return updatedRow;
+            } catch (error) {
+                // Gestione degli errori
+                setSnackbar({ children: error.message, severity: 'error' });
+                // Potresti voler lanciare l'errore qui per gestirlo più avanti
+                //throw error;
+            }
         },
-        [Services],
+        [Services]
     );
+
 
     const handleProcessRowUpdateError = React.useCallback((error) => {
         setSnackbar({ children: error.message, severity: 'error' });
@@ -159,7 +138,7 @@ export default function GridComponent({ fornitori }) {
         {
             field: 'email',
             headerName: 'Email',
-            width: 80,
+            width: 180,
             align: 'left',
             headerAlign: 'left',
             editable: true,
@@ -266,6 +245,6 @@ export default function GridComponent({ fornitori }) {
                     <Alert {...snackbar} onClose={handleCloseSnackbar} />
                 </Snackbar>
             )}
-        </Box>     
+        </Box>
     );
 }
