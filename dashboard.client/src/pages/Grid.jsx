@@ -4,12 +4,12 @@ import Services from '../Services/Services';
 import Grid from '../components/GridComponent';
 
 export async function loader() {
-    const fornitori = await Services.get('fornitori');
-    return fornitori;
+    const dataArray = await Services.get('fasi');
+    return dataArray;
 }
 
 function GridPage() {
-    const fornitori = useLoaderData();
+    const dataArray = useLoaderData();
     const columns = [
         {
             field: 'nome',
@@ -53,7 +53,7 @@ function GridPage() {
     const rowArray = { id: 0, nome: '', email: '', url: '', telefono: '', colore: '', lavorazioniFornite: '', isNew: true }
 
     return (
-        <Grid dataArray={fornitori} columns={columns} rowArray={rowArray}/>
+        <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={ 'fasi'} />
     );
 }
 

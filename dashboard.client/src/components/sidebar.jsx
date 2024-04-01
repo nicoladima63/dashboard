@@ -49,9 +49,9 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
                     </Link>
                 </li>
                 <li className='sidebar-list-item'>
-                    <a href="">
-                        <BsFillGearFill className='icon' /> Setting
-                    </a>
+                    <Link to={`/pages/fasi`}>
+                        <BsMenuButtonWideFill className='icon' /> Fasi
+                    </Link>
                 </li>
             </ul>
         </aside>

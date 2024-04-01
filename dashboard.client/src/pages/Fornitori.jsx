@@ -53,7 +53,7 @@ function GridPage() {
     const rowArray = { id: 0, nome: '', email: '', url: '', telefono: '', colore: '', lavorazioniFornite: '', isNew: true }
 
     return (
-        <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} />
+        <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={ 'fornitori'} />
     );
 }
 

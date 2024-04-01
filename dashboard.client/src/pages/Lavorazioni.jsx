@@ -5,11 +5,12 @@ import Grid from '../components/GridComponent';
 
 export async function loader() {
     const dataArray = await Services.get('lavorazioni');
-    return dataArray;
+    const fornitori = await Services.get('fornitori');
+    return { dataArray, fornitori };
 }
 
 function GridPage() {
-    const dataArray = useLoaderData();
+    const { dataArray, fornitori } = useLoaderData();
     const columns = [
         {
             field: 'nome',
@@ -26,34 +27,35 @@ function GridPage() {
             editable: true,
         },
         {
-            field: 'url',
-            headerName: 'Url',
+            field: 'tempodilavorazione',
+            headerName: 'Tempo di lavorazione',
+            type: 'number',
             width: 180,
             align: 'left',
             headerAlign: 'left',
             editable: true,
         },
         {
-            field: 'telefono',
-            headerName: 'Telefono',
+            field: 'fornitoriid',
+            headerName: 'Fornitore id',
             width: 180,
             align: 'left',
             headerAlign: 'left',
             editable: true,
         },
         {
-            field: 'colore',
-            headerName: 'Colore',
+            field: 'fornitori',
+            headerName: 'Fornitore',
             width: 180,
-            align: 'left',
-            headerAlign: 'left',
+            type: 'singleSelect',
+            valueOptions: fornitori.map((fornitore) => fornitore.nome),
             editable: true,
         },
     ];
-    const rowArray = { id: 0, nome: '', email: '', url: '', telefono: '', colore: '', lavorazioniFornite: '', isNew: true }
+    const rowArray = { id: 0, nome: '', descrizione: '', tempoDiLavorazione: 1, fornitoriId: '', fornitori: '', materialiPerLavorazione: '', isNew: true }
 
     return (
-        <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} />
+        <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={'lavorazioni'} />
     );
 }
 

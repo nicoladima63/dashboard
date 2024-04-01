@@ -5,10 +5,11 @@ import Root from "./routes/root";
 import ErrorPage from "./error-page";
 import Dashboard, {loader as dashboardLoader } from "./pages/dashboard";
 import Compiti, { loader as compitiLoader} from "./pages/Compiti";
-import Lavorazioni from "./pages/Lavorazioni";
-import Grid, { loader as gridLoader} from "./pages/Grid";
+import Lavorazioni, { loader as lavorazioniLoader} from "./pages/Lavorazioni";
+import Grid, { loader as gridLoader } from "./pages/Grid";
+import Fasi, { loader as fasiLoader } from "./pages/Fasi";
 import Fornitori, { loader as fornitoriLoader} from "./pages/Fornitori";
-import Utenti from "./pages/Utenti";
+import Utenti, { loader as userLoader} from "./pages/Utenti";
 
 
 const router = createBrowserRouter([
@@ -30,15 +31,22 @@ const router = createBrowserRouter([
             {
                 path: "/pages/utenti",
                 element: <Utenti />,
+                loader: userLoader
             },
             {
                 path: "/pages/lavorazioni",
                 element: <Lavorazioni />,
+                loader: lavorazioniLoader
             },
             {
                 path: "/pages/grid",
                 element: <Grid />,
                 loader: gridLoader
+            },
+            {
+                path: "/pages/fasi",
+                element: <Fasi />,
+                loader: fasiLoader
             },
             {
                 path: "/pages/fornitori",

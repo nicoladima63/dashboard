@@ -19,7 +19,7 @@ import Services from '../Services/Services';
 
 
 function EditToolbar(props) {
-    const { setRows, setRowModesModel } = props;
+    const { setRows, setRowModesModel,rowArray } = props;
 
     const handleClick = () => {
         const id = 0;
@@ -39,7 +39,7 @@ function EditToolbar(props) {
     );
 }
 
-export default function GridComponent({ dataArray, columns, rowArray }) {
+export default function GridComponent({ dataArray, columns, rowArray,controllerName }) {
     const [rows, setRows] = useState(dataArray);
     const [rowModesModel, setRowModesModel] = useState({});
     const [snackbar, setSnackbar] = useState(null);
@@ -81,10 +81,10 @@ export default function GridComponent({ dataArray, columns, rowArray }) {
 
     const processRowUpdate = async (newRow) => {
         if (newRow.isNew) {
-            await Services.create('fornitori', newRow);
+            await Services.create(controllerName, newRow);
             setSnackbar({ children: 'Record aggiunto con successo', severity: 'success' });
         } else {
-            await Services.update('fornitori', newRow.id, newRow);
+            await Services.update(controllerName, newRow.id, newRow);
             setSnackbar({ children: 'Record aggiornato con successo', severity: 'success' });
         }
         setRows(rows.map((row) => (row.id === newRow.id ? newRow : row)));
@@ -179,7 +179,7 @@ export default function GridComponent({ dataArray, columns, rowArray }) {
                     toolbar: EditToolbar,
                 }}
                 slotProps={{
-                    toolbar: { setRows, setRowModesModel },
+                    toolbar: { setRows, setRowModesModel,rowArray },
                 }}
             />
             {!!snackbar && (
