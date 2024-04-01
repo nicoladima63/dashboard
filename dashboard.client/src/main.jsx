@@ -6,6 +6,7 @@ import ErrorPage from "./error-page";
 import Dashboard, {loader as dashboardLoader } from "./pages/dashboard";
 import Compiti, { loader as compitiLoader} from "./pages/Compiti";
 import Lavorazioni from "./pages/Lavorazioni";
+import Grid, { loader as gridLoader} from "./pages/Grid";
 import Fornitori, { loader as fornitoriLoader} from "./pages/Fornitori";
 import Utenti from "./pages/Utenti";
 
@@ -33,6 +34,11 @@ const router = createBrowserRouter([
             {
                 path: "/pages/lavorazioni",
                 element: <Lavorazioni />,
+            },
+            {
+                path: "/pages/grid",
+                element: <Grid />,
+                loader: gridLoader
             },
             {
                 path: "/pages/fornitori",

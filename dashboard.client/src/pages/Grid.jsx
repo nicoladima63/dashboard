@@ -4,12 +4,12 @@ import Services from '../Services/Services';
 import Grid from '../components/GridComponent';
 
 export async function loader() {
-    const dataArray = await Services.get('lavorazioni');
-    return dataArray;
+    const fornitori = await Services.get('fornitori');
+    return fornitori;
 }
 
 function GridPage() {
-    const dataArray = useLoaderData();
+    const fornitori = useLoaderData();
     const columns = [
         {
             field: 'nome',
@@ -18,8 +18,8 @@ function GridPage() {
             editable: true
         },
         {
-            field: 'descrizione',
-            headerName: 'Descrizione',
+            field: 'email',
+            headerName: 'Email',
             width: 180,
             align: 'left',
             headerAlign: 'left',
@@ -53,7 +53,7 @@ function GridPage() {
     const rowArray = { id: 0, nome: '', email: '', url: '', telefono: '', colore: '', lavorazioniFornite: '', isNew: true }
 
     return (
-        <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} />
+        <Grid dataArray={fornitori} columns={columns} rowArray={rowArray}/>
     );
 }
 

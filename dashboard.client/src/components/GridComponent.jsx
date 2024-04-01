@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
@@ -8,7 +8,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-
 import {
     GridRowModes,
     DataGrid,
@@ -19,19 +18,16 @@ import {
 import Services from '../Services/Services';
 
 
-
-
 function EditToolbar(props) {
     const { setRows, setRowModesModel } = props;
 
     const handleClick = () => {
         const id = 0;
-        setRows((oldRows) => [...oldRows, {id, nome: '', email: '', url: '', telefono: '', colore: '', lavorazioniFornite: '', isNew: true }]);
+        setRows((oldRows) => [...oldRows, rowArray]);
         setRowModesModel((oldModel) => ({
             ...oldModel,
             [id]: { mode: GridRowModes.Edit, fieldToFocus: 'nome' },
         }));
-
     };
 
     return (
@@ -42,32 +38,16 @@ function EditToolbar(props) {
         </GridToolbarContainer>
     );
 }
-export default function GridComponent({ fornitori }) {
-    //console.log('GridComponent fornitori', fornitori);
-    //console.log('GridComponent tableFields', tableFields);
-    //console.log('GridComponent colonne', colonne)
-    const [rows, setRows] = useState(fornitori); // Stato per i fornitori
-    const [mode, setMode] = useState('view'); // Stato per la modalità (insert/view)
-    const [rowModesModel, setRowModesModel] = React.useState({});
-    const [snackbar, setSnackbar] = React.useState(null);
 
+export default function GridComponent({ dataArray, columns, rowArray }) {
+    const [rows, setRows] = useState(dataArray);
+    const [rowModesModel, setRowModesModel] = useState({});
+    const [snackbar, setSnackbar] = useState(null);
 
-    const handleCloseSnackbar = () => setSnackbar(null);
+    useEffect(() => {
+        setRows(dataArray);
+    }, [dataArray]);
 
-    const handleClickAddRecord = () => {
-        const id = 0;
-        setRows((oldRows) => [...oldRows, { id, nome: '', email: '', url: '', telefono: '', colore: '', lavorazioniFornite: '', isNew: true }]);
-        setRowModesModel((oldModel) => ({
-            ...oldModel,
-            [id]: { mode: GridRowModes.Edit, fieldToFocus: 'nome' },
-        }));
-    };
-
-    const handleRowEditStart = (params) => {
-        if (mode === 'view') {
-            setMode('edit');
-        }
-    };
 
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -99,27 +79,19 @@ export default function GridComponent({ fornitori }) {
         }
     };
 
-    const processRowUpdate = React.useCallback(
-        async (newRow) => {
-            const updatedRow = { ...newRow, isNew: false };
-            try {
-                // Attendere l'operazione di creazione prima di procedere
-                const response = await Services.create('fornitori', newRow); // Invia la modifica al server per la persistenza dei fornitori
-                setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-                setSnackbar({ children: 'Record aggiunto con successo', severity: 'success' });
-                return updatedRow;
-            } catch (error) {
-                // Gestione degli errori
-                setSnackbar({ children: error.message, severity: 'error' });
-                // Potresti voler lanciare l'errore qui per gestirlo più avanti
-                //throw error;
-            }
-        },
-        [Services]
-    );
+    const processRowUpdate = async (newRow) => {
+        if (newRow.isNew) {
+            await Services.create('fornitori', newRow);
+            setSnackbar({ children: 'Record aggiunto con successo', severity: 'success' });
+        } else {
+            await Services.update('fornitori', newRow.id, newRow);
+            setSnackbar({ children: 'Record aggiornato con successo', severity: 'success' });
+        }
+        setRows(rows.map((row) => (row.id === newRow.id ? newRow : row)));
+        return newRow;
+    };
 
-
-    const handleProcessRowUpdateError = React.useCallback((error) => {
+    const processRowUpdateError = React.useCallback((error) => {
         setSnackbar({ children: error.message, severity: 'error' });
     }, []);
 
@@ -128,45 +100,10 @@ export default function GridComponent({ fornitori }) {
         setRowModesModel(newRowModesModel);
     };
 
-    const columns = [
-        {
-            field: 'nome',
-            headerName: 'Nome',
-            width: 180,
-            editable: true
-        },
-        {
-            field: 'email',
-            headerName: 'Email',
-            width: 180,
-            align: 'left',
-            headerAlign: 'left',
-            editable: true,
-        },
-        {
-            field: 'url',
-            headerName: 'Url',
-            width: 180,
-            align: 'left',
-            headerAlign: 'left',
-            editable: true,
-        },
-        {
-            field: 'telefono',
-            headerName: 'Telefono',
-            width: 180,
-            align: 'left',
-            headerAlign: 'left',
-            editable: true,
-        },
-        {
-            field: 'colore',
-            headerName: 'Colore',
-            width: 180,
-            align: 'left',
-            headerAlign: 'left',
-            editable: true,
-        },
+    const handleCloseSnackbar = () => setSnackbar(null);
+
+
+    const actions = [
         {
             field: 'actions',
             type: 'actions',
@@ -215,19 +152,29 @@ export default function GridComponent({ fornitori }) {
         },
     ];
 
-    //const colonne = DataFormatter.getColumns(fornitori, 'fornitori');
 
     return (
-        <Box>
+        <Box
+            sx={{
+                height: 500,
+                width: '100%',
+                '& .actions': {
+                    color: 'text.secondary',
+                },
+                '& .textPrimary': {
+                    color: 'text.primary',
+                },
+            }}
+        >
             <DataGrid
                 rows={rows}
-                columns={columns}
+                columns={columns.concat(actions)}
                 editMode="row"
                 rowModesModel={rowModesModel}
                 onRowModesModelChange={handleRowModesModelChange}
                 onRowEditStop={handleRowEditStop}
                 processRowUpdate={processRowUpdate}
-                onProcessRowUpdateError={handleProcessRowUpdateError}
+                onProcessRowUpdateError={processRowUpdateError}
                 slots={{
                     toolbar: EditToolbar,
                 }}
