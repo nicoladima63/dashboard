@@ -6,31 +6,31 @@ import RemoveDoneIcon from '@mui/icons-material/RemoveDone';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import { Link } from 'react-router-dom';
 
-function Home({ compiti }) {
+function Home({ dataObj }) {
+    const { lavorazioni, utenti } = {dataObj}
     return (
         <main>
             <div className='main-title'>
                 <h3>DASHBOARD</h3>
             </div>
 
-            {compiti.length === 0 ? (
+            {lavorazioni.length === 0 ? (
                 <div className='no-tasks'>
-                    <p>Nessun compito inserito.</p>
-                    <Link to="/pages/compiti">Inserisci Compito</Link>
+                    <p>Nessuna lavorazione inserita.</p>
+                    <Link to="/pages/lavorazioni">NUOVA lavorazione</Link>
                 </div>
             ) : (
                 <div className='main-cards'>
-                    {compiti.map((compito) => {
+                        {lavorazioni.map((lavorazione) => {
                         return (
-                            <div className='card' key={compito.id} style={{ backgroundColor: compito.colore }}>
+                            <div className='card' key={lavorazione.id} style={{ backgroundColor: lavorazione.colore }}>
                                 <div className='card-inner'>
-                                    <h3>{compito.nome}</h3>
+                                    <h3>{lavorazione.paziente}</h3>
                                     <BsFillArchiveFill className='card_icon' />
                                 </div>
-                                <p>inserito il: {compito.inseritoil}, da: {compito.inseritoda}</p>
-                                <p>aggiornato il:{compito.aggiornatoil} da: {compito.aggiornatoda}</p>
-                                <p>tipo lavoro:{compito.lavoraione}</p>
-                                <p>data consegna:{compito.inconsegna}</p>
+                                <p>inserito il: {lavorazione.datainserimento}</p>
+                                <p>tipo di lavorazione:{lavorazione.tipolavorazione}</p>
+                                <p>data consegna:{lavorazione.dataconsegna}</p>
 
                                 <h4>{compito.completato ? <DoneAllIcon /> : <RemoveDoneIcon />}</h4>
                                 <BsFillGrid3X3GapFill className='card_icon' />

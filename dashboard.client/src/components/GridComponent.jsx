@@ -63,8 +63,27 @@ export default function GridComponent({ dataArray, columns, rowArray,controllerN
         setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     };
 
-    const handleDeleteClick = (id) => () => {
-        setRows(rows.filter((row) => row.id !== id));
+    const handleDeleteClicknoconfirm = (id) => async () => {
+        try {
+            await Services.delete(controllerName, id);
+            setRows(rows.filter((row) => row.id !== id));
+        } catch (error) {
+            console.error('Errore durante l\'eliminazione del record:', error);
+            setSnackbar({ children: 'Si è verificato un errore durante l\'eliminazione del record', severity: 'error' });
+        }
+    };
+
+    const handleDeleteClick = (id) => async () => {
+        const confirmed = window.confirm("Sei sicuro di voler eliminare questo record?");
+        if (confirmed) {
+            try {
+                await Services.delete(controllerName, id);
+                setRows(rows.filter((row) => row.id !== id));
+            } catch (error) {
+                console.error('Errore durante l\'eliminazione del record:', error);
+                setSnackbar({ children: 'Si è verificato un errore durante l\'eliminazione del record', severity: 'error' });
+            }
+        }
     };
 
     const handleCancelClick = (id) => () => {
@@ -80,15 +99,20 @@ export default function GridComponent({ dataArray, columns, rowArray,controllerN
     };
 
     const processRowUpdate = async (newRow) => {
-        if (newRow.isNew) {
-            await Services.create(controllerName, newRow);
-            setSnackbar({ children: 'Record aggiunto con successo', severity: 'success' });
-        } else {
-            await Services.update(controllerName, newRow.id, newRow);
-            setSnackbar({ children: 'Record aggiornato con successo', severity: 'success' });
+        try {
+            if (newRow.isNew) {
+                await Services.create(controllerName, newRow);
+                setSnackbar({ children: 'Record aggiunto con successo', severity: 'success' });
+            } else {
+                await Services.update(controllerName, newRow.id, newRow);
+                setSnackbar({ children: 'Record aggiornato con successo', severity: 'success' });
+            }
+            setRows(rows.map((row) => (row.id === newRow.id ? newRow : row)));
+            return newRow;
+        } catch (error) {
+            console.error('Errore durante l\'aggiornamento del record:', error);
+            setSnackbar({ children: 'Si è verificato un errore durante l\'aggiornamento del record', severity: 'error' });
         }
-        setRows(rows.map((row) => (row.id === newRow.id ? newRow : row)));
-        return newRow;
     };
 
     const processRowUpdateError = React.useCallback((error) => {

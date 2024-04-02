@@ -29,6 +29,11 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
                     </Link>
                 </li>
                 <li className='sidebar-list-item'>
+                    <Link to="/pages/tipolavorazione">
+                        <BsFillGrid3X3GapFill className='icon' /> Tipo Lavorazioni
+                    </Link>
+                </li>
+                <li className='sidebar-list-item'>
                     <Link to={`/pages/fornitori`}>
                         <BsMenuButtonWideFill className='icon' /> Fornitori
                     </Link>

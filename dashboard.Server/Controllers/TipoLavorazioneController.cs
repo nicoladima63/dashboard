@@ -10,14 +10,14 @@ using dashboard.Helper;
 
 namespace dashboard.Server.Controllers
 {
-    [Route("api/tipiLavorazione")]
+    [Route("api/tipolavorazione")]
     [ApiController]
 
-    public class TipiLavorazioneController : ControllerBase
+    public class TipoLavorazioneController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public TipiLavorazioneController(DataContext context)
+        public TipoLavorazioneController(DataContext context)
         {
             _context = context;
         }
@@ -116,7 +116,7 @@ namespace dashboard.Server.Controllers
         }
         private bool TipoLavorazione(int id)
         {
-            return (_context.Utenti?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.TipoLavorazione?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

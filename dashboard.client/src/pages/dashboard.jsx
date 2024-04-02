@@ -4,16 +4,15 @@ import Services from '../Services/Services'
 import Home from '../components/home';
 
 export async function loader() {
-    const compiti = await Services.get('compiti');
     const lavorazioni = await Services.get('lavorazioni');
     const utenti = await Services.get('utenti');
-    const fornitori = await Services.get('fornitori'); 
+    const fornitori = await Services.get('fornitori');
     return { compiti, lavorazioni, utenti, fornitori };
 }
 
 
 function Dashboard() {
-    const { compiti, lavorazioni, utenti ,fornitori} = useLoaderData()
+    const { lavorazioni, utenti, fornitori } = useLoaderData()
 
     return (
         <>
@@ -42,7 +41,7 @@ function Dashboard() {
                     <Link to="/pages/compiti">Inserisci Compito</Link>
                 </div>
             ) :
-                <Home compiti={compiti, lavorazioni, utenti} />
+                <Home dataObj={ lavorazioni, utenti} />
             }
 
 

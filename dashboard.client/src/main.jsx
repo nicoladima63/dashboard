@@ -4,7 +4,8 @@ import {createBrowserRouter,RouterProvider,} from "react-router-dom";
 import Root from "./routes/root";
 import ErrorPage from "./error-page";
 import Dashboard, {loader as dashboardLoader } from "./pages/dashboard";
-import Lavorazioni, { loader as lavorazioniLoader} from "./pages/Lavorazioni";
+import Lavorazioni, { loader as lavorazioniLoader } from "./pages/Lavorazioni";
+import TipoLavorazioni, { loader as tipoLavorazioniLoader } from "./pages/TipoLavorazione";
 import Fasi, { loader as fasiLoader } from "./pages/Fasi";
 import Fornitori, { loader as fornitoriLoader} from "./pages/Fornitori";
 import Utenti, { loader as userLoader} from "./pages/Utenti";
@@ -33,8 +34,8 @@ const router = createBrowserRouter([
             },
             {
                 path: "/pages/tipolavorazione",
-                element: <Compiti />,
-                loader: compitiLoader,
+                element: <TipoLavorazioni />,
+                loader: tipoLavorazioniLoader,
             },
             {
                 path: "/pages/utenti",
