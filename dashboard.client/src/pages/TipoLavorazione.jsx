@@ -29,7 +29,7 @@ function GridPage() {
         {
             field: 'descrizione',
             headerName: 'Descrizione',
-            width: 180,
+            width: 300,
             editable: true
         },
     ];
