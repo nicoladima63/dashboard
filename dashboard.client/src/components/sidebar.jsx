@@ -24,11 +24,6 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
                     </Link>
                 </li>
                 <li className='sidebar-list-item'>
-                    <Link to="/pages/compiti">
-                        <BsFillArchiveFill className='icon' /> Compiti
-                    </Link>
-                </li>
-                <li className='sidebar-list-item'>
                     <Link to="/pages/lavorazioni">
                         <BsFillGrid3X3GapFill className='icon' /> Lavorazioni
                     </Link>
@@ -44,15 +39,16 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
                     </Link>
                 </li>
                 <li className='sidebar-list-item'>
-                    <Link to={`/pages/grid`}>
-                        <BsMenuButtonWideFill className='icon' /> Grid
-                    </Link>
-                </li>
-                <li className='sidebar-list-item'>
                     <Link to={`/pages/fasi`}>
                         <BsMenuButtonWideFill className='icon' /> Fasi
                     </Link>
                 </li>
+                <li className='sidebar-list-item'>
+                    <Link to={`/pages/grid`}>
+                        <BsMenuButtonWideFill className='icon' /> Grid
+                    </Link>
+                </li>
+
             </ul>
         </aside>
     )

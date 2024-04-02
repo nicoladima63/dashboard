@@ -4,8 +4,8 @@ public class Fasi
 {
     public int Id { get; set; }
     public string? Nome { get; set; }
-    public int Compito  { get; set; }   
+    public string? LAvorazione  { get; set; }   
     public int Chilafa { get; set; }
-    public DateTime? Quando { get; set; }
-    public bool Fatto { get; set; }
+    public DateOnly? Quando { get; set; }
+    public bool Eseguita { get; set; }
 }

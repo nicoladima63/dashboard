@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using dashboard.Server.Models;
 using dashboard.Helper;
 
-namespace WebApiSQLite.Controllers
+namespace dashboard.Server.Controllers
 {
     [Route("api/fornitori")]
     [ApiController]

@@ -4,13 +4,11 @@ import {createBrowserRouter,RouterProvider,} from "react-router-dom";
 import Root from "./routes/root";
 import ErrorPage from "./error-page";
 import Dashboard, {loader as dashboardLoader } from "./pages/dashboard";
-import Compiti, { loader as compitiLoader} from "./pages/Compiti";
 import Lavorazioni, { loader as lavorazioniLoader} from "./pages/Lavorazioni";
-import Grid, { loader as gridLoader } from "./pages/Grid";
 import Fasi, { loader as fasiLoader } from "./pages/Fasi";
 import Fornitori, { loader as fornitoriLoader} from "./pages/Fornitori";
 import Utenti, { loader as userLoader} from "./pages/Utenti";
-
+import Grid, { loader as gridLoader } from "./pages/Grid";
 
 const router = createBrowserRouter([
     {
@@ -24,7 +22,17 @@ const router = createBrowserRouter([
                 loader: dashboardLoader
             },
             {
-                path: "/pages/compiti",
+                path: "/pages/lavorazioni",
+                element: <Lavorazioni />,
+                loader: lavorazioniLoader
+            },
+            {
+                path: "/pages/fornitori",
+                element: <Fornitori />,
+                loader: fornitoriLoader
+            },
+            {
+                path: "/pages/tipolavorazione",
                 element: <Compiti />,
                 loader: compitiLoader,
             },
@@ -34,24 +42,14 @@ const router = createBrowserRouter([
                 loader: userLoader
             },
             {
-                path: "/pages/lavorazioni",
-                element: <Lavorazioni />,
-                loader: lavorazioniLoader
-            },
-            {
-                path: "/pages/grid",
-                element: <Grid />,
-                loader: gridLoader
-            },
-            {
                 path: "/pages/fasi",
                 element: <Fasi />,
                 loader: fasiLoader
             },
             {
-                path: "/pages/fornitori",
-                element: <Fornitori />,
-                loader: fornitoriLoader
+                path: "/pages/grid",
+                element: <Grid />,
+                loader: gridLoader
             },
 
         ],

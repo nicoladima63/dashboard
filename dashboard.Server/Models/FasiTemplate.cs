@@ -7,6 +7,6 @@ public class FasiTemplate
     public string? Nome { get; set; }
     public int Lavorazione { get; set; }
     public int Chilafa { get; set; }
-    public DateTime? Quando { get; set; }
-    public bool Fatto { get; set; }
+    public DateOnly? Quando { get; set; }
+    public bool Eseguita { get; set; }
 }

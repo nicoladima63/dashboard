@@ -10,37 +10,38 @@ using dashboard.Helper;
 
 namespace dashboard.Server.Controllers
 {
-    [Route("api/utenti")]
+    [Route("api/tipiLavorazione")]
     [ApiController]
-    public class UtentiController : ControllerBase
+
+    public class TipiLavorazioneController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public UtentiController(DataContext context)
+        public TipiLavorazioneController(DataContext context)
         {
             _context = context;
         }
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Utenti>>> GetAll()
+        public async Task<ActionResult<IEnumerable<TipoLavorazione>>> GetAll()
         {
-          if (_context.Utenti == null)
-          {
-              return NotFound();
-          }
-            return await _context.Utenti.ToListAsync();
+            if (_context.TipoLavorazione == null)
+            {
+                return NotFound();
+            }
+            return await _context.TipoLavorazione.ToListAsync();
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Utenti>> GetById(int id)
+        public async Task<ActionResult<TipoLavorazione>> GetById(int id)
         {
-          if (_context.Utenti == null)
-          {
-              return NotFound();
-          }
-            var user = await _context.Utenti.FindAsync(id);
+            if (_context.TipoLavorazione == null)
+            {
+                return NotFound();
+            }
+            var user = await _context.TipoLavorazione.FindAsync(id);
 
             if (user == null)
             {
@@ -51,16 +52,15 @@ namespace dashboard.Server.Controllers
         }
 
         // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Utenti user)
+        public async Task<IActionResult> Update(int id, TipoLavorazione tipoLavorazione)
         {
-            if (id != user.Id)
+            if (id != tipoLavorazione.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(tipoLavorazione).State = EntityState.Modified;
 
             try
             {
@@ -68,7 +68,7 @@ namespace dashboard.Server.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!TipoLavorazione(id))
                 {
                     return NotFound();
                 }
@@ -82,15 +82,14 @@ namespace dashboard.Server.Controllers
         }
 
         // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Utenti>> Create(Utenti user)
+        public async Task<ActionResult<TipoLavorazione>> Create(TipoLavorazione tipoLavorazione)
         {
-          if (_context.Utenti == null)
-          {
-              return Problem("Entity set 'DataContext.Users'  is null.");
-          }
-            _context.Utenti.Add(user);
+            if (_context.TipoLavorazione == null)
+            {
+                return Problem("Entity set 'DataContext.TipoLavorazione'  is null.");
+            }
+            _context.TipoLavorazione.Add(tipoLavorazione);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -100,23 +99,22 @@ namespace dashboard.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            if (_context.Utenti == null)
+            if (_context.TipoLavorazione == null)
             {
                 return NotFound();
             }
-            var user = await _context.Utenti.FindAsync(id);
-            if (user == null)
+            var tipoLavorazione = await _context.TipoLavorazione.FindAsync(id);
+            if (tipoLavorazione == null)
             {
                 return NotFound();
             }
 
-            _context.Utenti.Remove(user);
+            _context.TipoLavorazione.Remove(tipoLavorazione);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
-
-        private bool UserExists(int id)
+        private bool TipoLavorazione(int id)
         {
             return (_context.Utenti?.Any(e => e.Id == id)).GetValueOrDefault();
         }

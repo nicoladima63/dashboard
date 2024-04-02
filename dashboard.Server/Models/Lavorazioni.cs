@@ -6,20 +6,15 @@ namespace dashboard.Server.Models
     {
         public int Id { get; set; }
 
-        [Column(TypeName = "nvarchar(max)")]
-        public string? Nome { get; set; }
+        public string? Fornitore { get; set; }
 
-        [Column(TypeName = "nvarchar(max)")]
-        public string? Descrizione { get; set; }
+        public string? TipoLavorazione { get; set; }
 
-        public int TempoDiLavorazione { get; set; }
+        public string? Paziente { get; set; }
+        public DateOnly DataInserimento { get; set; }
+        public DateOnly Dataconsegna { get; set; }
 
-        public int FornitoriId { get; set; }
-
-        public Fornitori? Fornitori { get; set; }
-
-        // Proprietà di navigazione per la collezione di materiali
-        public ICollection<MaterialiPerLavorazione>? MaterialiPerLavorazione { get; set; }
+        public bool Completata { get; set; }
     }
 
 
