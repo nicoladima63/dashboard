@@ -11,8 +11,8 @@ namespace dashboard.Server.Models
         public string? TipoLavorazione { get; set; }
 
         public string? Paziente { get; set; }
-        public DateOnly DataInserimento { get; set; }
-        public DateOnly Dataconsegna { get; set; }
+        public DateTime DataInserimento { get; set; }
+        public DateTime Dataconsegna { get; set; }
 
         public bool Completata { get; set; }
     }
