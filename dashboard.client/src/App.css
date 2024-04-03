@@ -3,8 +3,8 @@
 body {
     margin: 0;
     padding: 0;
-    /*background-color: #1d2634;*/
-    color: #9e9ea4;
+    background-color: #efefef;
+    color: #fff;
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -124,7 +124,7 @@ body {
     grid-area: main;
     overflow-y: auto;
     padding: 20px 20px;
-    color: rgba(255, 255, 255, 0.95);
+    color: #fff;
 }
 
 .main-title {
@@ -184,7 +184,7 @@ body {
 .no-tasks{
     border:solid 1px grey;
     margin:5px;
-    color:black
+    color:white
 }
 /* End Main  */
 /* Medium <= 992px */

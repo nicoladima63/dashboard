@@ -180,13 +180,14 @@ export default function GridComponent({ dataArray, columns, rowArray,controllerN
         <Box
             sx={{
                 height: 500,
-                width: '100%',
+                width: '80%',
                 '& .actions': {
                     color: 'text.secondary',
                 },
                 '& .textPrimary': {
                     color: 'text.primary',
                 },
+                margin:'0 auto'
             }}
         >
             <DataGrid
