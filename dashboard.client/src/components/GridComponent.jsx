@@ -48,6 +48,14 @@ export default function GridComponent({ dataArray, columns, rowArray,controllerN
         setRows(dataArray);
     }, [dataArray]);
 
+    useEffect(() => {
+        console.log("Data Array:", dataArray);
+    }, [dataArray]);
+
+    useEffect(() => {
+        console.log("Row Array:", rowArray);
+    }, [rowArray]);
+
 
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -194,6 +202,7 @@ export default function GridComponent({ dataArray, columns, rowArray,controllerN
                 rows={rows}
                 columns={columns.concat(actions)}
                 editMode="row"
+                autosizeOnMount={ true}
                 rowModesModel={rowModesModel}
                 onRowModesModelChange={handleRowModesModelChange}
                 onRowEditStop={handleRowEditStop}

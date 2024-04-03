@@ -12,44 +12,71 @@ export async function loader() {
 
 function GridPage() {
     const { dataArray, fornitori, tipolavorazioni } = useLoaderData();
+
+    // Creazione delle opzioni per la Select del fornitore e della tipolavorazione
+    const fornitoriOptions = fornitori.map((fornitore) => fornitore.nome);
+    const tipolavorazioniOptions = tipolavorazioni.map((tipolavorazione) => tipolavorazione.nome);
+
+
     const columns = [
         {
             field: 'fornitore',
             headerName: 'Fornitore',
             width: 180,
             type: 'singleSelect',
-            valueOptions: fornitori.map((fornitore) => fornitore.nome),
+            valueOptions: fornitoriOptions,
             editable: true,
         },
         {
-            field: 'tipolavorazione',
+            field: 'tipoLavorazione',
             headerName: 'Tipo di Lavorazione',
             width: 180,
             type: 'singleSelect',
-            valueOptions: tipolavorazioni.map((tipolavorazione) => tipolavorazione.nome),
+            valueOptions: tipolavorazioniOptions,
             editable: true,
         },
         {
             field: 'paziente',
             headerName: 'Paziente',
-            width: 180,
             align: 'left',
             headerAlign: 'left',
             editable: true,
         },
         {
-            field: 'datainserimento',
+            field: 'dataInserimento',
             headerName: 'Inserito il',
             type: 'date',
-            width: 180,
-            editable: true,
+            editable: false,
+            valueGetter: (params) => {
+                // Creazione di una data considerando l'ora locale
+                const localDate = new Date(params.value);
+                // Controllo se l'ora legale è attiva
+                const isDaylightSavingTime = localDate.getTimezoneOffset() < new Date(localDate.getFullYear(), 5, 1).getTimezoneOffset();
+                // Se l'ora legale è attiva, aggiungi un'ora alla data
+                if (isDaylightSavingTime) {
+                    localDate.setHours(localDate.getHours() + 1);
+                }
+
+                return localDate;
+            },
         },
         {
             field: 'dataconsegna',
             headerName: 'Data consegna',
             type: 'date',
-            width: 180,
             editable: true,
+            valueGetter: (params) => {
+                // Creazione di una data considerando l'ora locale
+                const localDate = new Date(params.value);
+                // Controllo se l'ora legale è attiva
+                const isDaylightSavingTime = localDate.getTimezoneOffset() < new Date(localDate.getFullYear(), 5, 1).getTimezoneOffset();
+                // Se l'ora legale è attiva, aggiungi un'ora alla data
+                if (isDaylightSavingTime) {
+                    localDate.setHours(localDate.getHours() + 1);
+                }
+
+                return localDate;
+            },
         },
         {
             field: 'completata',
@@ -59,7 +86,7 @@ function GridPage() {
             editable: true
         },
     ];
-    const rowArray = { id: 0, fornitore: '', tipolavorazione: '', paziente: '', datainserimento: '', dataconsegna: '', completata: false, isNew: true }
+    const rowArray = { id: 0, fornitore: '', tipoLavorazione: '', paziente: '', dataInserimento: new Date(), dataconsegna: '', completata: false, isNew: true }
 
     return (
         <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={'lavorazioni'} />

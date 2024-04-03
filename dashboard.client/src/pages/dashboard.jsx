@@ -4,15 +4,15 @@ import Services from '../Services/Services'
 import Home from '../components/home';
 
 export async function loader() {
-    const lavorazioni = await Services.get('lavorazioni');
+    const tipolavorazioni = await Services.get('tipolavorazione');
     const utenti = await Services.get('utenti');
     const fornitori = await Services.get('fornitori');
-    return { compiti, lavorazioni, utenti, fornitori };
+    return { tipolavorazioni, utenti, fornitori };
 }
 
 
 function Dashboard() {
-    const { lavorazioni, utenti, fornitori } = useLoaderData()
+    const { tipolavorazioni, utenti, fornitori } = useLoaderData()
 
     return (
         <>
@@ -29,23 +29,12 @@ function Dashboard() {
                     <Link to="/pages/utenti">Regista utente</Link>
                 </div>
             )}
-            {lavorazioni.length === 0 && (
+            {tipolavorazioni.length === 0 && (
                 <div className='no-tasks'>
-                    <p>Nessuna lavorazione inserits.</p>
-                    <Link to="/pages/lavorazioni">Inserisci Lavorazione</Link>
+                    <p>Nessuna tipologia di lavorazione inserita.</p>
+                    <Link to="/pages/tipolavorazione">Inserisci Lavorazione</Link>
                 </div>
             )}
-            {compiti.length === 0 ? (
-                <div className='no-tasks'>
-                    <p>Nessun Compito inserito.</p>
-                    <Link to="/pages/compiti">Inserisci Compito</Link>
-                </div>
-            ) :
-                <Home dataObj={ lavorazioni, utenti} />
-            }
-
-
-
         </>
     )
 }
