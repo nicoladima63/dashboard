@@ -48,15 +48,6 @@ export default function GridComponent({ dataArray, columns, rowArray,controllerN
         setRows(dataArray);
     }, [dataArray]);
 
-    useEffect(() => {
-        console.log("Data Array:", dataArray);
-    }, [dataArray]);
-
-    useEffect(() => {
-        console.log("Row Array:", rowArray);
-    }, [rowArray]);
-
-
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
             event.defaultMuiPrevented = true;
