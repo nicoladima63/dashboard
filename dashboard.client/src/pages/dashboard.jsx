@@ -42,10 +42,16 @@ function Dashboard() {
     const lavorazioniNonCompletate = lavorazioni.filter(lavorazione => !lavorazione.completata);
 
     // Mappa dei fornitori per nome
-    const fornitoriMap = fornitori.reduce((map, forn) => {
-        map[forn.colore] = forn;
-        return map;
-    }, {});
+    const getColoreFornitore = (nome) => {
+        // Trova il fornitore selezionato dal database utilizzando l'ID
+        const fornitoreSelezionato = fornitori.find(fornitore => fornitore.nome === nome);
+        // Se il fornitore selezionato non è stato trovato, restituisci una stringa vuota
+        if (!fornitoreSelezionato) {
+            return "#00ff00";
+        }
+        // Restituisci una stringa contenente il valore del colore per il fornitore selezionato
+        return fornitoreSelezionato.colore
+    };
 
     return (
         <>
@@ -61,13 +67,11 @@ function Dashboard() {
                     <br />
                     <h2 style={{ color: '#216477' }}>Lavorazioni da completare</h2>
                     <Grid container spacing={6}>
-
                         {lavorazioniNonCompletate.map(lavorazione => {
-                            const fornitore = fornitoriMap[lavorazione.fornitore];
-                            const backgroundColor = fornitore ? fornitore.colore : '#216477'; // Colore di default se il fornitore non ha un colore specificato
+                            const backgroundColor = getColoreFornitore(lavorazione.fornitore)
                             return (
                                 <Grid item xs={2} key={lavorazione.id}>
-                                    <Card sx={{ minWidth: 175, backgroundColor }}>
+                                    <Card sx={{ minWidth: 175, backgroundColor: backgroundColor }}>
                                         <CardContent>
                                             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                                                 {lavorazione.fornitore}
