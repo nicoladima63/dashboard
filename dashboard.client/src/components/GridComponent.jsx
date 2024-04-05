@@ -17,7 +17,6 @@ import {
 } from '@mui/x-data-grid';
 import Services from '../Services/Services';
 
-
 function EditToolbar(props) {
     const { setRows, setRowModesModel,rowArray } = props;
 
@@ -39,7 +38,7 @@ function EditToolbar(props) {
     );
 }
 
-export default function GridComponent({ dataArray, columns, rowArray,controllerName }) {
+export default function GridComponent({ dataArray, columns, rowArray, controllerName }) {
     const [rows, setRows] = useState(dataArray);
     const [rowModesModel, setRowModesModel] = useState({});
     const [snackbar, setSnackbar] = useState(null);
@@ -125,6 +124,20 @@ export default function GridComponent({ dataArray, columns, rowArray,controllerN
 
     const handleCloseSnackbar = () => setSnackbar(null);
 
+    // Funzione per aprire la modal dialog
+    const handleOpenDialog = () => {
+        setOpen(true);
+    };
+
+    // Funzione per chiudere la modal dialog
+    const handleCloseDialog = () => {
+        setOpen(false);
+    };
+
+    const handleDetailGridItemClick = (id) => {
+        // Apri la finestra di dialogo quando un elemento viene cliccato nella DetailGrid
+        setOpen(true);
+    };
 
     const actions = [
         {
@@ -170,6 +183,7 @@ export default function GridComponent({ dataArray, columns, rowArray,controllerN
                         onClick={handleDeleteClick(id)}
                         color="inherit"
                     />,
+                    
                 ];
             },
         },
@@ -217,6 +231,7 @@ export default function GridComponent({ dataArray, columns, rowArray,controllerN
                     <Alert {...snackbar} onClose={handleCloseSnackbar} />
                 </Snackbar>
             )}
+            
         </Box>
     );
 }

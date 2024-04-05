@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLoaderData } from "react-router-dom";
 import Services from '../Services/Services';
+
 import Grid from '../components/GridComponent';
+import DataGridDetail from '../components/DataGridDetailsComponent';
+
+import { GridActionsCellItem } from '@mui/x-data-grid';
+import SegmentIcon from '@mui/icons-material/Segment';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 
 export async function loader() {
     const dataArray = await Services.get('lavorazioni');
@@ -12,14 +22,37 @@ export async function loader() {
 
 function GridPage() {
     const { dataArray, fornitori, tipolavorazioni } = useLoaderData();
+    const [open, setOpen] = useState(false);
 
     // Creazione delle opzioni per la Select del fornitore e della tipolavorazione
     const fornitoriOptions = fornitori.map((fornitore) => fornitore.nome);
     const tipolavorazioniOptions = tipolavorazioni.map((tipolavorazione) => tipolavorazione.nome);
 
+    const handleOpenDialog = (id) => {
+        setOpen(true);
+    };
+
+    // Funzione per chiudere la modal dialog
+    const handleCloseDialog = () => {
+        setOpen(false);
+    };
 
     const columns = [
         {
+            field: 'add',
+            headerName: '',
+            width: 80,
+            renderCell: (item) => (
+                <GridActionsCellItem
+                    icon={<SegmentIcon />} // Utilizza l'icona +
+                    label="Aggiungi"
+                    sx={{
+                        color: 'primary.main',
+                    }}
+                    onClick={() => handleOpenDialog(item.row.id)}
+                />
+            )
+        }, {
             field: 'fornitore',
             headerName: 'Fornitore',
             width: 180,
@@ -89,7 +122,21 @@ function GridPage() {
     const rowArray = { id: 0, fornitore: '', tipoLavorazione: '', paziente: '', dataInserimento: new Date(), dataconsegna: '', completata: false, isNew: true }
 
     return (
-        <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={'lavorazioni'} />
+        <>
+            <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={'lavorazioni'} onOpenDialog={handleOpenDialog} />
+            <Dialog open={open} onClose={handleCloseDialog}>
+                <DialogTitle>Fasi della Lavorazione</DialogTitle>
+                <DialogContent>
+                    <DataGridDetail
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">
+                        Chiudi
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
     );
 }
 
