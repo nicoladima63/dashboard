@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public string? Fornitore { get; set; }
+        public int FornitoreId { get; set; }
 
         public string? Nome { get; set; }
         public string? Descrizione { get; set; }    

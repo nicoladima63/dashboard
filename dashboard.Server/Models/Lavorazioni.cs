@@ -7,8 +7,10 @@ namespace dashboard.Server.Models
         public int Id { get; set; }
 
         public string? Fornitore { get; set; }
+        public int FornitoreId { get; set; }
 
         public string? TipoLavorazione { get; set; }
+        public int TipoLavorazioneId { get; set; }
 
         public string? Paziente { get; set; }
         public DateTime DataInserimento { get; set; }

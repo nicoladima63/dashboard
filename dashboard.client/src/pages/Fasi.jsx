@@ -3,7 +3,7 @@ import { useLoaderData } from "react-router-dom";
 import Services from '../Services/Services';
 import Grid from '../components/GridComponent';
 
-export async function loader2() {
+export async function loader() {
     const dataArray = await Services.get('fasi');
     const utenti = await Services.get('utenti');
     const lavorazioni = await Services.get('lavorazioni');
@@ -11,56 +11,47 @@ export async function loader2() {
     return { dataArray, utenti, lavorazioni, tipolavorazioni };
 }
 
-export function loader() {
-    let dataArray, utenti, lavorazioni, tipolavorazioni;
-
-    return Services.get('fasi')
-        .then(data => {
-            dataArray = data;
-            console.log('data', data);
-            return Services.get('utenti');
-        })
-        .then(data => {
-            utenti = data;
-            console.log('data', data);
-            return Services.get('lavorazioni');
-        })
-        .then(data => {
-            lavorazioni = data;
-            console.log('data', data);
-            return Services.get('tipolavorazione');
-        })
-        .then(data => {
-            tipolavorazioni = data;
-            console.log('data', data);
-            return { dataArray, utenti, lavorazioni, tipolavorazioni };
-        })
-        .catch(error => {
-            console.error('Errore durante il caricamento dei dati:', error);
-            throw error; // Rilancia l'errore per gestirlo più avanti
-        });
-}
 
 
 function GridPage() {
-    const { dataArray, utenti, lavorazioni, tipolavorazioni } = useLoaderData();
-    //console.log('fasi', dataArray);
+    const { dataArray, tipolavorazioni,utenti } = useLoaderData();
+    console.log('fasi', dataArray);
     //console.log('utenti', utenti);
     //console.log('lavorazioni', lavorazioni);
-    //console.log('tipolavorazioni', tipolavorazioni);
-
+    //.log('tipolavorazioni', tipolavorazioni);
+    const utentiOptions = utenti.map((utente) => utente.nome);
+    //const tipoLavorazioniOptions = tipolavorazioni.map((lavorazione) => lavorazione.nome); // Modifica
+    const tipoLavorazioniOptions = tipolavorazioni.map((lavorazione) => {
+        return {
+            value: lavorazione.id, // Usa l'ID univoco come valore
+            label: lavorazione.nome, // Usa il nome come testo da visualizzare
+        };
+    });
     const columns = [
         {
-            field: 'lavorazione',
-            headerName: 'Lavorazione',
-            width: 180,
-            align: 'left',
-            headerAlign: 'left',
+            field: 'id',
+            headerName: 'ID',
+            width: 80,
+            editable: false
+        },
+        {
+            field: 'tipoLavorazioneId',
+            headerName: 'tipoLavorazioneId',
+            width: 80,
+            editable: false
+        },
+        {
+            field: 'tipoLavorazione',
+            headerName: 'Tipo Lavorazione',
+            width: 280,
+            type: 'singleSelect',
+            //valueOptions: tipoLavorazioniOptions,
+            editorComponent: () => <Select options={tipoLavorazioniOptions} value={tipoLavorazione} />,
             editable: true,
         },
         {
             field: 'nome',
-            headerName: 'Nome',
+            headerName: 'Nome fase',
             width: 180,
             editable: true
         },
@@ -69,13 +60,13 @@ function GridPage() {
             headerName: 'Chi la fa',
             width: 180,
             type: 'singleSelect',
-            valueOptions: utenti.map((utente) => utente.nome),
+            valueOptions: utentiOptions,
             editable: true,
         },
         {
             field: 'quando',
             headerName: 'Quando',
-            type:'date',
+            type: 'date',
             width: 180,
             editable: true,
             valueGetter: (params) => {
@@ -94,14 +85,14 @@ function GridPage() {
         {
             field: 'fatto',
             headerName: 'Fatto',
-            type:'boolean',
+            type: 'boolean',
             width: 80,
             align: 'center',
             headerAlign: 'center',
             editable: true,
         },
     ];
-    const rowArray = { id: 0, nome: '', compito: '',chilafa:'', quando: '', fatto: false, isNew: true }
+    const rowArray = { id: 0, tipoLavorazioneId: 0, tipoLavorazione: '', nome: '', chilafa: '', quando: new Date(), fatto: false, isNew: true }
     return (
         <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={'fasi'} />
     );

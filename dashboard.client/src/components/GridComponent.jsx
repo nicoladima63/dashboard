@@ -124,20 +124,6 @@ export default function GridComponent({ dataArray, columns, rowArray, controller
 
     const handleCloseSnackbar = () => setSnackbar(null);
 
-    // Funzione per aprire la modal dialog
-    const handleOpenDialog = () => {
-        setOpen(true);
-    };
-
-    // Funzione per chiudere la modal dialog
-    const handleCloseDialog = () => {
-        setOpen(false);
-    };
-
-    const handleDetailGridItemClick = (id) => {
-        // Apri la finestra di dialogo quando un elemento viene cliccato nella DetailGrid
-        setOpen(true);
-    };
 
     const actions = [
         {
@@ -208,7 +194,6 @@ export default function GridComponent({ dataArray, columns, rowArray, controller
                 rows={rows}
                 columns={columns.concat(actions)}
                 editMode="row"
-                autosizeOnMount={ true}
                 rowModesModel={rowModesModel}
                 onRowModesModelChange={handleRowModesModelChange}
                 onRowEditStop={handleRowEditStop}

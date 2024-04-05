@@ -11,8 +11,8 @@ using dashboard.Helper;
 namespace dashboard.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240402143458_Inizio")]
-    partial class Inizio
+    [Migration("20240405133822_ModificatabellaFasi")]
+    partial class ModificatabellaFasi
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,14 +32,20 @@ namespace dashboard.Server.Migrations
                     b.Property<bool>("Eseguita")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Lavorazione")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Nome")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("Quando")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("TipoLavorazione")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TipoLavorazioneId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UtenteId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -117,11 +123,17 @@ namespace dashboard.Server.Migrations
                     b.Property<string>("Fornitore")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("FornitoreId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Paziente")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TipoLavorazione")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("TipoLavorazioneId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -139,6 +151,9 @@ namespace dashboard.Server.Migrations
 
                     b.Property<string>("Fornitore")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("FornitoreId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Nome")
                         .HasColumnType("TEXT");

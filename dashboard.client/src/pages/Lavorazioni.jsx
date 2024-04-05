@@ -4,6 +4,7 @@ import Services from '../Services/Services';
 
 import Grid from '../components/GridComponent';
 import DataGridDetail from '../components/DataGridDetailsComponent';
+import Fasi from './Fasi';
 
 import { GridActionsCellItem } from '@mui/x-data-grid';
 import SegmentIcon from '@mui/icons-material/Segment';
@@ -15,14 +16,16 @@ import Button from '@mui/material/Button';
 
 export async function loader() {
     const dataArray = await Services.get('lavorazioni');
+    const utenti = await Services.get('utenti');
     const fornitori = await Services.get('fornitori');
     const tipolavorazioni = await Services.get('tipolavorazione');
-    return { dataArray, fornitori, tipolavorazioni };
+    return { dataArray, fornitori, tipolavorazioni,utenti };
 }
 
 function GridPage() {
-    const { dataArray, fornitori, tipolavorazioni } = useLoaderData();
-    const [open, setOpen] = useState(false);
+    const { dataArray, fornitori, tipolavorazioni,utenti } = useLoaderData();
+    const [open, setOpen] = React.useState(false);
+
 
     // Creazione delle opzioni per la Select del fornitore e della tipolavorazione
     const fornitoriOptions = fornitori.map((fornitore) => fornitore.nome);
@@ -39,6 +42,13 @@ function GridPage() {
 
     const columns = [
         {
+            field: 'id',
+            headerName: 'ID',
+            width: 80,
+            editable: false
+        },
+
+        {
             field: 'add',
             headerName: '',
             width: 80,
@@ -52,7 +62,8 @@ function GridPage() {
                     onClick={() => handleOpenDialog(item.row.id)}
                 />
             )
-        }, {
+        },
+        {
             field: 'fornitore',
             headerName: 'Fornitore',
             width: 180,
@@ -124,11 +135,10 @@ function GridPage() {
     return (
         <>
             <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={'lavorazioni'} onOpenDialog={handleOpenDialog} />
-            <Dialog open={open} onClose={handleCloseDialog}>
+            <Dialog open={open} onClose={handleCloseDialog} maxWidth={'xl'}>
                 <DialogTitle>Fasi della Lavorazione</DialogTitle>
                 <DialogContent>
-                    <DataGridDetail
-                    />
+                    <DataGridDetail utenti={utenti} tipolavorazioni={tipolavorazioni} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog} color="primary">

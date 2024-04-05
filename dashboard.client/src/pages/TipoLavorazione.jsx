@@ -13,6 +13,12 @@ function GridPage() {
     const { dataArray, fornitori } = useLoaderData();
     const columns = [
         {
+            field: 'id',
+            headerName: 'ID',
+            width: 80,
+            editable: false
+        },
+        {
             field: 'fornitore',
             headerName: 'Fornitore',
             width: 180,
