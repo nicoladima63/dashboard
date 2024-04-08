@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLoaderData } from "react-router-dom";
 import Services from '../Services/Services';
 //griglia
@@ -19,12 +19,15 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import IconButton from '@mui/material/IconButton';
 
 export async function loader() {
     const fasitemplate = await Services.get('fasitemplate');
     const utenti = await Services.get('utenti');
     const tipolavorazioni = await Services.get('tipolavorazione');
-    return { fasitemplate, utenti,  tipolavorazioni };
+    return { fasitemplate, utenti, tipolavorazioni };
 }
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -56,42 +59,43 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 function FasiTemplate() {
-    const { fasitemplate, utenti,  tipolavorazioni } = useLoaderData();
-    const [lavorazioneNome, setLavorazioneNome] = useState();
-    const[rows, setRows] = useState([]);
+    const { fasitemplate, utenti, tipolavorazioni } = useLoaderData();
+    const [lavorazioneNome, setLavorazioneNome] = useState('');
+    const [rows, setRows] = useState([]);
+    const [modifiedRows, setModifiedRows] = useState([]);
 
-    // useEffect should be used directly, not redefined
     useEffect(() => {
-        // Set rows when fasitemplate changes
-        console.log(fasitemplate);
-        setRows(fasitemplate);
-    }, [fasitemplate]);
+        // Inizialmente non ci sono righe nella tabella
+        setRows([]);
+        setModifiedRows([]);
+    }, []);
 
     const handleItemListClick = (tipolavorazione) => {
         setLavorazioneNome(tipolavorazione.nome);
 
-        // Filtra le righe in base alla tipoLavorazioneId cliccata
-        const newRows = rows.filter((row) => row.tipoLavorazioneId !== tipolavorazione.id);
+        // Filtra le righe di fasitemplate per il tipo di lavorazione cliccato
+        const filteredRows = fasitemplate.filter(row => row.tipoLavorazioneId === tipolavorazione.id);
+        setRows(filteredRows);
+        console.log('filtered', filteredRows)
+        setModifiedRows(filteredRows);
+    };
 
-        // Controlla se ci sono righe rimanenti per la tipoLavorazioneId cliccata
-        const existingRow = rows.find((row) => row.tipoLavorazioneId === tipolavorazione.id);
+    const handleDeleteRecord = (index) => {
+        const newRows = [...modifiedRows];
+        newRows.splice(index, 1);
+        setModifiedRows(newRows);
+    };
 
-        // Se non ci sono righe rimanenti, aggiungi una nuova riga
-        if (!existingRow) {
-            const newRow = {
-                tipoLavorazioneId: tipolavorazione.id,
-                nome: '',
-                chilafa: '',
-                quando: '',
-                eseguita: false
-            };
-            // Aggiungi la nuova riga
-            setRows([...newRows, newRow]);
-        } else {
-            // Aggiorna lo stato delle righe solo con quelle filtrate
-            setRows(newRows);
-        }
-    }
+    const handleSaveRecord = async (index) => {
+        console.log(modifiedRows[index]); // Puoi fare ciò che vuoi con la riga modificata
+        // Ad esempio, puoi inviare una richiesta API per aggiornare il record sul server
+    };
+
+    const handleNomeChange = (index, event) => {
+        const updatedRows = [...modifiedRows];
+        updatedRows[index].nome = event.target.value;
+        setModifiedRows(updatedRows);
+    };
 
     return (
         <>
@@ -121,27 +125,38 @@ function FasiTemplate() {
                                     <TableHead>
                                         <TableRow>
                                             <StyledTableCell>ID</StyledTableCell>
-                                            <StyledTableCell align="center">tipoLavorazioneID</StyledTableCell>
+                                            <StyledTableCell align="center">Tipo Lavorazione ID</StyledTableCell>
                                             <StyledTableCell align="left">Nome</StyledTableCell>
-                                            <StyledTableCell align="right">chilafa</StyledTableCell>
-                                            <StyledTableCell align="right">quando</StyledTableCell>
-                                            <StyledTableCell align="right">eseguita</StyledTableCell>
-                                            <StyledTableCell align="right">azioni</StyledTableCell>
+                                            <StyledTableCell align="center">Azioni</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {rows.map((row,index) => (
+                                        {modifiedRows.map((row, index) => (
                                             <StyledTableRow key={row.tipoLavorazioneId}>
                                                 <StyledTableCell component="th" scope="row">{row.id}</StyledTableCell>
                                                 <StyledTableCell align="center">{row.tipoLavorazioneId}</StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {row.nome}
-                                                    <TextField key={index} name={'nome${index}' } size="small" />
+                                                    <TextField
+                                                        name={'nome'}
+                                                        size="small"
+                                                        value={row.nome}
+                                                        onChange={(event) => handleNomeChange(index, event)}
+                                                    />
                                                 </StyledTableCell>
-                                                <StyledTableCell align="right">{row.chilafa}</StyledTableCell>
-                                                <StyledTableCell align="right">{row.quando}</StyledTableCell>
-                                                <StyledTableCell align="right">{row.eseguita}</StyledTableCell>
-                                                <StyledTableCell align="right"> + - </StyledTableCell>
+                                                <StyledTableCell align="center">
+                                                    <IconButton
+                                                        aria-label="delete"
+                                                        onClick={() => handleDeleteRecord(index)}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        aria-label="save"
+                                                        onClick={() => handleSaveRecord(index)}
+                                                    >
+                                                        <SaveIcon />
+                                                    </IconButton>
+                                                </StyledTableCell>
                                             </StyledTableRow>
                                         ))}
                                     </TableBody>
