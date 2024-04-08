@@ -7,6 +7,7 @@ import Dashboard, {loader as dashboardLoader } from "./pages/dashboard";
 import Lavorazioni, { loader as lavorazioniLoader } from "./pages/Lavorazioni";
 import TipoLavorazioni, { loader as tipoLavorazioniLoader } from "./pages/TipoLavorazione";
 import Fasi, { loader as fasiLoader } from "./pages/Fasi";
+import FasiTemplate, { loader as fasiTemplateLoader } from "./pages/FasiTemplate";
 import Fornitori, { loader as fornitoriLoader} from "./pages/Fornitori";
 import Utenti, { loader as userLoader} from "./pages/Utenti";
 import Grid, { loader as gridLoader } from "./pages/Grid";
@@ -46,6 +47,11 @@ const router = createBrowserRouter([
                 path: "/pages/fasi",
                 element: <Fasi />,
                 loader: fasiLoader
+            },
+            {
+                path: "/pages/fasitemplate",
+                element: <FasiTemplate />,
+                loader: fasiTemplateLoader
             },
             {
                 path: "/pages/grid",

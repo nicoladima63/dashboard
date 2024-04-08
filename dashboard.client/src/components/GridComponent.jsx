@@ -97,6 +97,8 @@ export default function GridComponent({ dataArray, columns, rowArray, controller
     };
 
     const processRowUpdate = async (newRow) => {
+        console.log('newrow', newRow)
+        return;
         try {
             if (newRow.isNew) {
                 await Services.create(controllerName, newRow);
