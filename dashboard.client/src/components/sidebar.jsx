@@ -49,6 +49,11 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
                     </Link>
                 </li>
                 <li className='sidebar-list-item'>
+                    <Link to={`/pages/fasitemplate`}>
+                        <BsMenuButtonWideFill className='icon' /> Template
+                    </Link>
+                </li>
+                <li className='sidebar-list-item'>
                     <Link to={`/pages/grid`}>
                         <BsMenuButtonWideFill className='icon' /> Grid
                     </Link>
