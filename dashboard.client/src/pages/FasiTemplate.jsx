@@ -18,14 +18,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
+import TextField from '@mui/material/TextField';
 
 export async function loader() {
     const fasitemplate = await Services.get('fasitemplate');
     const utenti = await Services.get('utenti');
-    const lavorazioni = await Services.get('lavorazioni');
     const tipolavorazioni = await Services.get('tipolavorazione');
-    return { fasitemplate, utenti, lavorazioni, tipolavorazioni };
+    return { fasitemplate, utenti,  tipolavorazioni };
 }
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -57,18 +56,41 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 function FasiTemplate() {
-    const { fasitemplate, utenti, lavorazioni, tipolavorazioni } = useLoaderData();
+    const { fasitemplate, utenti,  tipolavorazioni } = useLoaderData();
     const [lavorazioneNome, setLavorazioneNome] = useState();
     const[rows, setRows] = useState([]);
 
     // useEffect should be used directly, not redefined
     useEffect(() => {
         // Set rows when fasitemplate changes
+        console.log(fasitemplate);
         setRows(fasitemplate);
     }, [fasitemplate]);
 
-    const handleItemListClick = (lavorazione) => {
-        setLavorazioneNome(lavorazione.nome);
+    const handleItemListClick = (tipolavorazione) => {
+        setLavorazioneNome(tipolavorazione.nome);
+
+        // Filtra le righe in base alla tipoLavorazioneId cliccata
+        const newRows = rows.filter((row) => row.tipoLavorazioneId !== tipolavorazione.id);
+
+        // Controlla se ci sono righe rimanenti per la tipoLavorazioneId cliccata
+        const existingRow = rows.find((row) => row.tipoLavorazioneId === tipolavorazione.id);
+
+        // Se non ci sono righe rimanenti, aggiungi una nuova riga
+        if (!existingRow) {
+            const newRow = {
+                tipoLavorazioneId: tipolavorazione.id,
+                nome: '',
+                chilafa: '',
+                quando: '',
+                eseguita: false
+            };
+            // Aggiungi la nuova riga
+            setRows([...newRows, newRow]);
+        } else {
+            // Aggiorna lo stato delle righe solo con quelle filtrate
+            setRows(newRows);
+        }
     }
 
     return (
@@ -79,10 +101,10 @@ function FasiTemplate() {
                         <h3>Tipo di lavorazioni</h3>
                         <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                             <List>
-                                {tipolavorazioni.map((lavorazione) => (
-                                    <ListItem key={lavorazione.id} disablePadding>
-                                        <ListItemButton onClick={() => handleItemListClick(lavorazione)}>
-                                            <ListItemText primary={lavorazione.nome} />
+                                {tipolavorazioni.map((tipolavorazione) => (
+                                    <ListItem key={tipolavorazione.id} disablePadding>
+                                        <ListItemButton onClick={() => handleItemListClick(tipolavorazione)}>
+                                            <ListItemText primary={tipolavorazione.nome} />
                                         </ListItemButton>
                                     </ListItem>
                                 ))}
@@ -98,17 +120,24 @@ function FasiTemplate() {
                                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                                     <TableHead>
                                         <TableRow>
-                                            <StyledTableCell>Dessert (100g serving)</StyledTableCell>
-                                            <StyledTableCell align="right">Calories</StyledTableCell>
-                                            <StyledTableCell align="right">Fat&nbsp;(g)</StyledTableCell>
-                                            <StyledTableCell align="right">Carbs&nbsp;(g)</StyledTableCell>
-                                            <StyledTableCell align="right">Protein&nbsp;(g)</StyledTableCell>
+                                            <StyledTableCell>ID</StyledTableCell>
+                                            <StyledTableCell align="center">tipoLavorazioneID</StyledTableCell>
+                                            <StyledTableCell align="left">Nome</StyledTableCell>
+                                            <StyledTableCell align="right">chilafa</StyledTableCell>
+                                            <StyledTableCell align="right">quando</StyledTableCell>
+                                            <StyledTableCell align="right">eseguita</StyledTableCell>
+                                            <StyledTableCell align="right">azioni</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {rows.map((row) => (
-                                            <StyledTableRow key={row.id}>
-                                                <StyledTableCell component="th" scope="row">{row.nome}</StyledTableCell>
+                                        {rows.map((row,index) => (
+                                            <StyledTableRow key={row.tipoLavorazioneId}>
+                                                <StyledTableCell component="th" scope="row">{row.id}</StyledTableCell>
+                                                <StyledTableCell align="center">{row.tipoLavorazioneId}</StyledTableCell>
+                                                <StyledTableCell align="left">
+                                                    {row.nome}
+                                                    <TextField key={index} name={'nome${index}' } size="small" />
+                                                </StyledTableCell>
                                                 <StyledTableCell align="right">{row.chilafa}</StyledTableCell>
                                                 <StyledTableCell align="right">{row.quando}</StyledTableCell>
                                                 <StyledTableCell align="right">{row.eseguita}</StyledTableCell>
