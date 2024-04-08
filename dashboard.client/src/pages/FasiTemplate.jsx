@@ -22,6 +22,9 @@ import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 export async function loader() {
     const fasitemplate = await Services.get('fasitemplate');
@@ -72,12 +75,17 @@ function FasiTemplate() {
 
     const handleItemListClick = (tipolavorazione) => {
         setLavorazioneNome(tipolavorazione.nome);
-
+        const newRow = { tipoLavorazioneId: 0, nome: '', chilafa: '', quando: '', eseguite: false, isNew: true };
         // Filtra le righe di fasitemplate per il tipo di lavorazione cliccato
         const filteredRows = fasitemplate.filter(row => row.tipoLavorazioneId === tipolavorazione.id);
-        setRows(filteredRows);
+        if (!filteredRows || filteredRows.length > 0) {
+            setRows(filteredRows);
+            setModifiedRows(filteredRows);
+        } else {
+            setRows([newRow]);
+            setModifiedRows([newRow]);
+        }
         console.log('filtered', filteredRows)
-        setModifiedRows(filteredRows);
     };
 
     const handleDeleteRecord = (index) => {
@@ -87,8 +95,8 @@ function FasiTemplate() {
     };
 
     const handleSaveRecord = async (index) => {
-        console.log(modifiedRows[index]); // Puoi fare ciò che vuoi con la riga modificata
-        // Ad esempio, puoi inviare una richiesta API per aggiornare il record sul server
+        const rowToSave = modifiedRows[index];
+        const response = await Services.update('fasitemplate', rowToSave.id, rowToSave); //ottiene response
     };
 
     const handleNomeChange = (index, event) => {
@@ -96,6 +104,17 @@ function FasiTemplate() {
         updatedRows[index].nome = event.target.value;
         setModifiedRows(updatedRows);
     };
+
+    const handleSelectChange = (index, event) => {
+        const updatedRows = [...modifiedRows];
+        updatedRows[index].chilafa = event.target.value;
+        console.log(updatedRows);
+        setModifiedRows(updatedRows);
+    };
+
+
+
+
 
     return (
         <>
@@ -127,6 +146,9 @@ function FasiTemplate() {
                                             <StyledTableCell>ID</StyledTableCell>
                                             <StyledTableCell align="center">Tipo Lavorazione ID</StyledTableCell>
                                             <StyledTableCell align="left">Nome</StyledTableCell>
+                                            <StyledTableCell align="left">Chi la fa</StyledTableCell>
+                                            <StyledTableCell align="left">Quando</StyledTableCell>
+                                            <StyledTableCell align="left">Eseguita</StyledTableCell>
                                             <StyledTableCell align="center">Azioni</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
@@ -143,6 +165,21 @@ function FasiTemplate() {
                                                         onChange={(event) => handleNomeChange(index, event)}
                                                     />
                                                 </StyledTableCell>
+                                                <StyledTableCell align="center">
+                                                    <Select
+                                                        value={row.chilafa}
+                                                        size="small"
+                                                        onChange={(event) => handleSelectChange(index, event)}>
+                                                        <MenuItem value="" selected>
+                                                            <em>Selezionare un utente</em>
+                                                        </MenuItem>
+                                                        {utenti.map((utente) => (
+                                                            <MenuItem key={utente.id} value={utente.nome}>{utente.nome}</MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left">{row.quando}</StyledTableCell>
+                                                <StyledTableCell align="left">{row.eseguita}</StyledTableCell>
                                                 <StyledTableCell align="center">
                                                     <IconButton
                                                         aria-label="delete"
