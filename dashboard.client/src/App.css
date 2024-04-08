@@ -186,6 +186,11 @@ body {
     margin:5px;
     color:white
 }
+
+.maiuscolo {
+    text-transform: uppercase;
+    font-size:24px;
+}
 /* End Main  */
 /* Medium <= 992px */
 @media screen and (max-width: 992px) {

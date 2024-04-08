@@ -22,9 +22,10 @@ import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
+import Divider from '@mui/material/Divider';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
 
 export async function loader() {
     const fasitemplate = await Services.get('fasitemplate');
@@ -66,16 +67,21 @@ function FasiTemplate() {
     const [lavorazioneNome, setLavorazioneNome] = useState('');
     const [rows, setRows] = useState([]);
     const [modifiedRows, setModifiedRows] = useState([]);
+    const [tipolavorazioneSelected, setTipolavorazioneSelected] = useState(false);
+    const [tipolavorazioneid, setTipolavorazioneid] = useState(null);
 
     useEffect(() => {
         // Inizialmente non ci sono righe nella tabella
         setRows([]);
         setModifiedRows([]);
+        setTipolavorazioneid('');
     }, []);
 
     const handleItemListClick = (tipolavorazione) => {
         setLavorazioneNome(tipolavorazione.nome);
-        const newRow = { tipoLavorazioneId: 0, nome: '', chilafa: '', quando: '', eseguite: false, isNew: true };
+        setTipolavorazioneSelected(true);
+        setTipolavorazioneid(tipolavorazione.id);
+        const newRow = { tipoLavorazioneId: 0, nome: '', chilafa: '', quando: '', eseguite: false, isNew: true, isModified: false };
         // Filtra le righe di fasitemplate per il tipo di lavorazione cliccato
         const filteredRows = fasitemplate.filter(row => row.tipoLavorazioneId === tipolavorazione.id);
         if (!filteredRows || filteredRows.length > 0) {
@@ -85,8 +91,22 @@ function FasiTemplate() {
             setRows([newRow]);
             setModifiedRows([newRow]);
         }
-        console.log('filtered', filteredRows)
     };
+
+    const handleAddRecord = () => {
+        console.log(tipolavorazioneid);
+
+        const newRow = { tipoLavorazioneId: tipolavorazioneid, nome: '', chilafa: '', quando: '', eseguite: false, isNew: true, isModified: false };
+        // Controlla se l'ultima riga è stata modificata
+        if (modifiedRows[modifiedRows.length - 1].isModified) {
+            //alert("Modifica l'ultima riga prima di aggiungerne un'altra");
+            return;
+        }
+        setRows([...rows, newRow]);
+        setModifiedRows([...modifiedRows, newRow]);
+        setTipolavorazioneSelected(false);
+    };
+
 
     const handleDeleteRecord = (index) => {
         const newRows = [...modifiedRows];
@@ -102,6 +122,7 @@ function FasiTemplate() {
     const handleNomeChange = (index, event) => {
         const updatedRows = [...modifiedRows];
         updatedRows[index].nome = event.target.value;
+        updatedRows[index].isModified = true;
         setModifiedRows(updatedRows);
     };
 
@@ -112,7 +133,17 @@ function FasiTemplate() {
         setModifiedRows(updatedRows);
     };
 
-
+    const handleRefresh = async () => {
+        const fasitemplate = await Services.get('fasitemplate');
+        const filteredRows = fasitemplate.filter(row => row.tipoLavorazioneId === tipolavorazioneid);
+        setRows(filteredRows);
+        setModifiedRows(filteredRows);
+        if (tipolavorazioneid) {
+            setTipolavorazioneSelected(true);
+        } else {
+            setTipolavorazioneSelected(false);
+        }
+    };
 
 
 
@@ -137,7 +168,12 @@ function FasiTemplate() {
                 </Grid>
                 <Grid item xs={8}>
                     <Item>
-                        Fasi di lavoro per: <b>{lavorazioneNome}</b><br /><br /><br />
+                        <h3>Fasi di lavoro per: </h3>
+                        <Divider />
+                        <span className="maiuscolo"><b>{lavorazioneNome}</b></span>
+                        <Divider />
+                        <br />
+
                         <div style={{ height: 400, width: '100%' }}>
                             <TableContainer component={Paper}>
                                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -148,7 +184,7 @@ function FasiTemplate() {
                                             <StyledTableCell align="left">Nome</StyledTableCell>
                                             <StyledTableCell align="left">Chi la fa</StyledTableCell>
                                             <StyledTableCell align="left">Quando</StyledTableCell>
-                                            <StyledTableCell align="left">Eseguita</StyledTableCell>
+                                            <StyledTableCell align="center">Eseguita</StyledTableCell>
                                             <StyledTableCell align="center">Azioni</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
@@ -165,7 +201,7 @@ function FasiTemplate() {
                                                         onChange={(event) => handleNomeChange(index, event)}
                                                     />
                                                 </StyledTableCell>
-                                                <StyledTableCell align="center">
+                                                <StyledTableCell align="left">
                                                     <Select
                                                         value={row.chilafa}
                                                         size="small"
@@ -179,20 +215,17 @@ function FasiTemplate() {
                                                     </Select>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">{row.quando}</StyledTableCell>
-                                                <StyledTableCell align="left">{row.eseguita}</StyledTableCell>
+                                                <StyledTableCell align="center">{row.eseguita ? 'Si' : 'No'}</StyledTableCell>
                                                 <StyledTableCell align="center">
-                                                    <IconButton
-                                                        aria-label="delete"
-                                                        onClick={() => handleDeleteRecord(index)}
-                                                    >
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                    <IconButton
-                                                        aria-label="save"
-                                                        onClick={() => handleSaveRecord(index)}
-                                                    >
-                                                        <SaveIcon />
-                                                    </IconButton>
+                                                    {row.isModified ? (
+                                                        <IconButton aria-label="save" onClick={() => handleSaveRecord(index)}>
+                                                            <SaveIcon />
+                                                        </IconButton>
+                                                    ) : (
+                                                        <IconButton aria-label="delete" onClick={() => handleDeleteRecord(index)}>
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    )}
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}
@@ -203,7 +236,12 @@ function FasiTemplate() {
                     </Item>
                 </Grid>
                 <Grid item xs={2}>
-                    <Item>xs</Item>
+                    <Item>
+                        <Button variant="contained" onClick={handleAddRecord} disabled={!tipolavorazioneSelected}>Aggiungi</Button>
+                    </Item>
+                    <Item>
+                        <Button variant="outlined" onClick={handleRefresh}>Refresh</Button>
+                    </Item>
                 </Grid>
             </Grid>
         </>
