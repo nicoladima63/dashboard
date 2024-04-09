@@ -23,7 +23,7 @@ namespace dashboard.Server.Controllers
 
         // GET: api/FasiTemplate
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FasiTemplate>>> GEtAll()
+        public async Task<ActionResult<IEnumerable<FasiTemplate>>> GetAll()
         {
           if (_context.FasiTemplate == null)
           {
@@ -93,7 +93,8 @@ namespace dashboard.Server.Controllers
             _context.FasiTemplate.Add(fasiTemplate);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFasiTemplate", new { id = fasiTemplate.Id }, fasiTemplate);
+            return NoContent();
+
         }
 
         // DELETE: api/FasiTemplate/5

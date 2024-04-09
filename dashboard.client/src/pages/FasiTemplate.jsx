@@ -26,7 +26,8 @@ import Divider from '@mui/material/Divider';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
-
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 export async function loader() {
     const fasitemplate = await Services.get('fasitemplate');
     const utenti = await Services.get('utenti');
@@ -69,6 +70,7 @@ function FasiTemplate() {
     const [modifiedRows, setModifiedRows] = useState([]);
     const [tipolavorazioneSelected, setTipolavorazioneSelected] = useState(false);//variabile true o false per abilitare il pulsante aggiungi
     const [tipolavorazioneid, setTipolavorazioneid] = useState(null);//id del tipo di lavorazione selezionata
+    const [snackbar, setSnackbar] = useState(null);
 
     useEffect(() => {
         // Inizialmente non ci sono righe nella tabella
@@ -85,12 +87,13 @@ function FasiTemplate() {
         const filteredRows = fasitemplate.filter(row => row.tipoLavorazioneId === tipolavorazione.id);
         setRows(filteredRows);
         setModifiedRows(filteredRows);
+        console.log(tipolavorazioneid);
     };
 
     const handleAddRecord = () => {
         console.log(tipolavorazioneid);
 
-        const newRow = { id=0, tipoLavorazioneId: tipolavorazioneid, nome: '', chilafa: '', quando: new Date(), eseguita: false, isNew: true, isModified: false };
+        const newRow = { tipoLavorazioneId: tipolavorazioneid, nome: '', chilafa: '', quando: new Date(), eseguita: false, isNew: true, isModified: false };
         // Controlla se l'ultima riga è stata modificata
         if (modifiedRows[modifiedRows.length - 1].isModified) {
             //alert("Modifica l'ultima riga prima di aggiungerne un'altra");
@@ -102,8 +105,9 @@ function FasiTemplate() {
     };
 
 
-    const handleDeleteRecord = (index) => {
+    const handleDeleteRecord = async(index) => {
         const newRows = [...modifiedRows];
+        await Services.delete('fasitemplate', newRows[index].id);
         newRows.splice(index, 1);
         setModifiedRows(newRows);
     };
@@ -112,11 +116,12 @@ function FasiTemplate() {
         const rowToSave = modifiedRows[index];
         if (rowToSave.isNew) {
             console.log(rowToSave)
-            //await Services.create('fasitemplate', rowToSave);
+            await Services.create('fasitemplate', rowToSave);
+            setSnackbar({ children: 'Record aggiunto con successo', severity: 'success' });
         } else {
             await Services.update('fasitemplate', rowToSave.id, rowToSave);
+            setSnackbar({ children: 'Record aggiornato con successo', severity: 'success' });
         }
-        const filteredRows = fasitemplate.filter(row => row.tipoLavorazioneId === tipolavorazioneid);
         handleRefresh()
     };
 
@@ -145,6 +150,8 @@ function FasiTemplate() {
             setTipolavorazioneSelected(false);
         }
     };
+
+    const handleCloseSnackbar = () => setSnackbar(null);
 
 
 
@@ -189,7 +196,7 @@ function FasiTemplate() {
                                     </TableHead>
                                     <TableBody>
                                         {modifiedRows.map((row, index) => (
-                                            <StyledTableRow key={row.tipoLavorazioneId}>
+                                            <StyledTableRow key={index}>
                                                 <StyledTableCell component="th" scope="row">{row.id}</StyledTableCell>
                                                 <StyledTableCell align="center">{row.tipoLavorazioneId}</StyledTableCell>
                                                 <StyledTableCell align="left">
@@ -241,6 +248,17 @@ function FasiTemplate() {
                     </Item>
                 </Grid>
             </Grid>
+            {!!snackbar && (
+                <Snackbar
+                    open
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    onClose={handleCloseSnackbar}
+                    autoHideDuration={6000}
+                >
+                    <Alert {...snackbar} onClose={handleCloseSnackbar} />
+                </Snackbar>
+            )}
+
         </>
     );
 }
