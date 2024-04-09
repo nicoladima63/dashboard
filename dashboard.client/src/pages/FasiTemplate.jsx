@@ -67,8 +67,8 @@ function FasiTemplate() {
     const [lavorazioneNome, setLavorazioneNome] = useState('');
     const [rows, setRows] = useState([]);
     const [modifiedRows, setModifiedRows] = useState([]);
-    const [tipolavorazioneSelected, setTipolavorazioneSelected] = useState(false);
-    const [tipolavorazioneid, setTipolavorazioneid] = useState(null);
+    const [tipolavorazioneSelected, setTipolavorazioneSelected] = useState(false);//variabile true o false per abilitare il pulsante aggiungi
+    const [tipolavorazioneid, setTipolavorazioneid] = useState(null);//id del tipo di lavorazione selezionata
 
     useEffect(() => {
         // Inizialmente non ci sono righe nella tabella
@@ -81,22 +81,16 @@ function FasiTemplate() {
         setLavorazioneNome(tipolavorazione.nome);
         setTipolavorazioneSelected(true);
         setTipolavorazioneid(tipolavorazione.id);
-        const newRow = { tipoLavorazioneId: 0, nome: '', chilafa: '', quando: '', eseguite: false, isNew: true, isModified: false };
         // Filtra le righe di fasitemplate per il tipo di lavorazione cliccato
         const filteredRows = fasitemplate.filter(row => row.tipoLavorazioneId === tipolavorazione.id);
-        if (!filteredRows || filteredRows.length > 0) {
-            setRows(filteredRows);
-            setModifiedRows(filteredRows);
-        } else {
-            setRows([newRow]);
-            setModifiedRows([newRow]);
-        }
+        setRows(filteredRows);
+        setModifiedRows(filteredRows);
     };
 
     const handleAddRecord = () => {
         console.log(tipolavorazioneid);
 
-        const newRow = { tipoLavorazioneId: tipolavorazioneid, nome: '', chilafa: '', quando: '', eseguite: false, isNew: true, isModified: false };
+        const newRow = { id=0, tipoLavorazioneId: tipolavorazioneid, nome: '', chilafa: '', quando: new Date(), eseguita: false, isNew: true, isModified: false };
         // Controlla se l'ultima riga è stata modificata
         if (modifiedRows[modifiedRows.length - 1].isModified) {
             //alert("Modifica l'ultima riga prima di aggiungerne un'altra");
@@ -116,7 +110,14 @@ function FasiTemplate() {
 
     const handleSaveRecord = async (index) => {
         const rowToSave = modifiedRows[index];
-        const response = await Services.update('fasitemplate', rowToSave.id, rowToSave); //ottiene response
+        if (rowToSave.isNew) {
+            console.log(rowToSave)
+            //await Services.create('fasitemplate', rowToSave);
+        } else {
+            await Services.update('fasitemplate', rowToSave.id, rowToSave);
+        }
+        const filteredRows = fasitemplate.filter(row => row.tipoLavorazioneId === tipolavorazioneid);
+        handleRefresh()
     };
 
     const handleNomeChange = (index, event) => {
@@ -183,8 +184,6 @@ function FasiTemplate() {
                                             <StyledTableCell align="center">Tipo Lavorazione ID</StyledTableCell>
                                             <StyledTableCell align="left">Nome</StyledTableCell>
                                             <StyledTableCell align="left">Chi la fa</StyledTableCell>
-                                            <StyledTableCell align="left">Quando</StyledTableCell>
-                                            <StyledTableCell align="center">Eseguita</StyledTableCell>
                                             <StyledTableCell align="center">Azioni</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
@@ -214,8 +213,6 @@ function FasiTemplate() {
                                                         ))}
                                                     </Select>
                                                 </StyledTableCell>
-                                                <StyledTableCell align="left">{row.quando}</StyledTableCell>
-                                                <StyledTableCell align="center">{row.eseguita ? 'Si' : 'No'}</StyledTableCell>
                                                 <StyledTableCell align="center">
                                                     {row.isModified ? (
                                                         <IconButton aria-label="save" onClick={() => handleSaveRecord(index)}>
