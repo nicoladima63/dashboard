@@ -1,28 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLoaderData, Link } from "react-router-dom";
 import Services from '../Services/Services';
 
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { Button, CardActionArea, CardActions } from '@mui/material';
+import {CardActions,FormControlLabel,Checkbox} from '@mui/material';
 
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 
 export async function loader() {
     const tipolavorazioni = await Services.get('tipolavorazione');
     const lavorazioni = await Services.get('lavorazioni');
     const utenti = await Services.get('utenti');
     const fornitori = await Services.get('fornitori');
-    return { tipolavorazioni, lavorazioni, utenti, fornitori };
+    const fasi = await Services.get('fasi');
+    return { tipolavorazioni, lavorazioni, utenti, fornitori, fasi };
 }
 
 // Funzione per formattare la data nel formato desiderato
-function formatData(dataString) {
+function formatData2(dataString) {
     const data = new Date(dataString);
     const giorniSettimana = ['Domenica', 'Lunedi', 'Martedi', 'Mercoledi', 'Giovedi', 'Venerdi', 'Sabato'];
     const mesi = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
@@ -31,9 +28,28 @@ function formatData(dataString) {
     const mese = mesi[data.getMonth()];
     return `${giornoSettimana} ${giorno} ${mese}`;
 }
+function formatData(dataString) {
+    const data = new Date(dataString);
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+    };
+    return data.toLocaleDateString('it-IT', options);
+}
+
+async function aggiornaFase2(fase) {
+    fase.eseguita = !fase.eseguita;
+    await Services.update('fasi', fase.id, fase);
+    const updatedFasiLavorazione = fasi.map(f => f.id === fase.id ? fase : f);
+    setFasiLavorazione(updatedFasiLavorazione);
+}
+
 
 function Dashboard() {
-    const { tipolavorazioni, utenti, fornitori, lavorazioni } = useLoaderData();
+    const { tipolavorazioni, utenti, fornitori, lavorazioni, fasi } = useLoaderData();
+    const [fasiLavorazione, setFasiLavorazione] = useState([]);
 
     // Verifica se tutti gli utenti sono soddisfatti
     const tuttiSoddisfatti = fornitori.length > 0 && utenti.length > 0 && tipolavorazioni.length > 0 && lavorazioni.length > 0;
@@ -52,6 +68,17 @@ function Dashboard() {
         // Restituisci una stringa contenente il valore del colore per il fornitore selezionato
         return fornitoreSelezionato.colore
     };
+    async function aggiornaFase(fase) {
+        try {
+            fase.eseguita = !fase.eseguita;
+            await Services.update('fasi', fase.id, fase);
+            const updatedFasiLavorazione = fasi.map(f => f.id === fase.id ? fase : f);
+            setFasiLavorazione(updatedFasiLavorazione);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
 
     return (
         <>
@@ -69,9 +96,10 @@ function Dashboard() {
                     <Grid container spacing={6}>
                         {lavorazioniNonCompletate.map(lavorazione => {
                             const backgroundColor = getColoreFornitore(lavorazione.fornitore)
+                            const fasiLavorazione = fasi.filter(fase => fase.lavorazioneId === lavorazione.id);
                             return (
                                 <Grid item xs={2} key={lavorazione.id}>
-                                    <Card sx={{ minWidth: 175, backgroundColor: backgroundColor }}>
+                                    <Card sx={{ minWidth: 275, backgroundColor: backgroundColor }}>
                                         <CardContent>
                                             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                                                 {lavorazione.fornitore}
@@ -89,8 +117,26 @@ function Dashboard() {
                                             </Typography>
                                         </CardContent>
                                         <CardActions>
-                                            <Button size="small">Learn More</Button>
+                                            <p>Fasi</p>
                                         </CardActions>
+                                        {fasiLavorazione.map(fase => (
+                                            <Grid item xs={12} key={fase.id}>
+                                                <Card sx={{ minWidth: 275 }}>
+                                                    <CardContent>
+                                                        <Typography component="div">
+                                                            {fase.nome}
+                                                        </Typography>
+                                                        <Typography sx={{ mb: 0 }} color="text.secondary">
+                                                            {fase.descrizione}
+                                                        </Typography>
+                                                        <FormControlLabel
+                                                            control={<Checkbox checked={fase.eseguita} onChange={() => aggiornaFase(fase)} />}
+                                                            label="Eseguita"
+                                                        />
+                                                    </CardContent>
+                                                </Card>
+                                            </Grid>
+                                        ))}
                                     </Card>
                                 </Grid>
                             );
