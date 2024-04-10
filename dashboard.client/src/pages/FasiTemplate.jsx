@@ -187,8 +187,6 @@ function FasiTemplate() {
                                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                                     <TableHead>
                                         <TableRow>
-                                            <StyledTableCell>ID</StyledTableCell>
-                                            <StyledTableCell align="center">Tipo Lavorazione ID</StyledTableCell>
                                             <StyledTableCell align="left">Nome</StyledTableCell>
                                             <StyledTableCell align="left">Chi la fa</StyledTableCell>
                                             <StyledTableCell align="center">Azioni</StyledTableCell>
@@ -197,8 +195,6 @@ function FasiTemplate() {
                                     <TableBody>
                                         {modifiedRows.map((row, index) => (
                                             <StyledTableRow key={index}>
-                                                <StyledTableCell component="th" scope="row">{row.id}</StyledTableCell>
-                                                <StyledTableCell align="center">{row.tipoLavorazioneId}</StyledTableCell>
                                                 <StyledTableCell align="left">
                                                     <TextField
                                                         name={'nome'}
