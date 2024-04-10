@@ -5,10 +5,16 @@ import Services from '../Services/Services';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import {CardActions,FormControlLabel,Checkbox} from '@mui/material';
+import { List, ListItem, ListItemIcon, ListItemText, Button, Divider, Box } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
 
 import Grid from '@mui/material/Grid';
-
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 export async function loader() {
     const tipolavorazioni = await Services.get('tipolavorazione');
     const lavorazioni = await Services.get('lavorazioni');
@@ -19,15 +25,6 @@ export async function loader() {
 }
 
 // Funzione per formattare la data nel formato desiderato
-function formatData2(dataString) {
-    const data = new Date(dataString);
-    const giorniSettimana = ['Domenica', 'Lunedi', 'Martedi', 'Mercoledi', 'Giovedi', 'Venerdi', 'Sabato'];
-    const mesi = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
-    const giornoSettimana = giorniSettimana[data.getDay()];
-    const giorno = data.getDate();
-    const mese = mesi[data.getMonth()];
-    return `${giornoSettimana} ${giorno} ${mese}`;
-}
 function formatData(dataString) {
     const data = new Date(dataString);
     const options = {
@@ -39,12 +36,13 @@ function formatData(dataString) {
     return data.toLocaleDateString('it-IT', options);
 }
 
-async function aggiornaFase2(fase) {
-    fase.eseguita = !fase.eseguita;
-    await Services.update('fasi', fase.id, fase);
-    const updatedFasiLavorazione = fasi.map(f => f.id === fase.id ? fase : f);
-    setFasiLavorazione(updatedFasiLavorazione);
-}
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+}));
 
 
 function Dashboard() {
@@ -82,6 +80,7 @@ function Dashboard() {
 
     return (
         <>
+
             {!tuttiSoddisfatti && (
                 <div className='no-tasks'>
                     <p>Alcuni requisiti non sono soddisfatti.</p>
@@ -90,58 +89,78 @@ function Dashboard() {
 
             {tuttiSoddisfatti && (
                 <div>
-                    <Link to="/pages/lavorazioni">Aggiungi Lavorazione</Link>
-                    <br />
                     <h2 style={{ color: '#216477' }}>Lavorazioni da completare</h2>
-                    <Grid container spacing={6}>
-                        {lavorazioniNonCompletate.map(lavorazione => {
-                            const backgroundColor = getColoreFornitore(lavorazione.fornitore)
-                            const fasiLavorazione = fasi.filter(fase => fase.lavorazioneId === lavorazione.id);
-                            return (
-                                <Grid item xs={2} key={lavorazione.id}>
-                                    <Card sx={{ minWidth: 275, backgroundColor: backgroundColor }}>
-                                        <CardContent>
-                                            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                                                {lavorazione.fornitore}
-                                            </Typography>
-                                            <Typography variant="h6" component="div">
-                                                {lavorazione.paziente}
-                                            </Typography>
-                                            <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                                                {lavorazione.tipoLavorazione}
-                                            </Typography>
-                                            <Typography variant="body2">
-                                                inserita <br />{formatData(lavorazione.dataInserimento)}
-                                                <br /><br />
-                                                in consegna per: <br />{formatData(lavorazione.dataconsegna)}
-                                            </Typography>
-                                        </CardContent>
-                                        <CardActions>
-                                            <p>Fasi</p>
-                                        </CardActions>
-                                        {fasiLavorazione.map(fase => (
-                                            <Grid item xs={12} key={fase.id}>
-                                                <Card sx={{ minWidth: 275 }}>
-                                                    <CardContent>
-                                                        <Typography component="div">
-                                                            {fase.nome}
-                                                        </Typography>
-                                                        <Typography sx={{ mb: 0 }} color="text.secondary">
-                                                            {fase.descrizione}
-                                                        </Typography>
-                                                        <FormControlLabel
-                                                            control={<Checkbox checked={fase.eseguita} onChange={() => aggiornaFase(fase)} />}
-                                                            label="Eseguita"
-                                                        />
-                                                    </CardContent>
-                                                </Card>
-                                            </Grid>
-                                        ))}
-                                    </Card>
-                                </Grid>
-                            );
-                        })}
+                    <Grid container direction="row" alignItems="flex-start" spacing={1}>
+                        <Grid item xs={2}>
+                            <Item>
+                                <List>
+                                    <ListItem>
+                                        <Button variant="contained" component={Link} to="/pages/lavorazioni">
+                                            Aggiungi Lavorazione
+                                        </Button>
+                                    </ListItem>
+                                    <Divider />
+                                    <ListItem>
+                                        <ListItemText primary='scadenze da fare' />
+                                    </ListItem>
+                                </List>
+                            </Item>
+                        </Grid>
+
+                        <Grid item xs={10}>
+                            {lavorazioniNonCompletate.map(lavorazione => {
+                                const backgroundColor = getColoreFornitore(lavorazione.fornitore)
+                                const fasiLavorazione = fasi.filter(fase => fase.lavorazioneId === lavorazione.id);
+                                return (
+                                        <Card key={lavorazione.id} sx={{ width: 300, mr: 1,mb:2, display:'inline-block',float:'left' }}>
+                                            <CardContent sx={{ backgroundColor: backgroundColor }}>
+                                                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                                                    {lavorazione.fornitore}
+                                                </Typography>
+                                                <Typography variant="p" component="div">
+                                                    {lavorazione.paziente}
+                                                </Typography>
+                                                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                                    {lavorazione.tipoLavorazione}
+                                                </Typography>
+                                                <Typography variant="body2">
+                                                    inserita <br />{formatData(lavorazione.dataInserimento)}
+                                                    <br /><br />
+                                                    in consegna per: <br />{formatData(lavorazione.dataconsegna)}
+                                                </Typography>
+                                            </CardContent>
+                                            <Accordion disabled={lavorazione.completata}>
+                                                <AccordionSummary>
+                                                    <Typography variant="h6" component="div">
+                                                        Fasi: {fasiLavorazione.filter(fase => fase.eseguita).length} / {fasiLavorazione.length}
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+                                                    <List>
+                                                        {fasiLavorazione.map(fase => (
+                                                            <ListItem key={fase.id} disablePadding onClick={() => aggiornaFase(fase)}
+                                                                sx={{
+                                                                    backgroundColor: '#fff',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#e0e0e0',
+                                                                    },
+                                                                }}
+                                                            >
+                                                                <ListItemIcon>
+                                                                    {fase.eseguita ? <CheckIcon /> : <CloseIcon />}
+                                                                </ListItemIcon>
+                                                                <ListItemText primary={fase.nome} />
+                                                            </ListItem>
+                                                        ))}
+                                                    </List>
+                                                </AccordionDetails>
+                                            </Accordion>
+                                        </Card>
+                                );
+                            })}
+                        </Grid>
                     </Grid>
+
                 </div>
 
             )}
