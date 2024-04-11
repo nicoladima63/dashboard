@@ -19,20 +19,25 @@ export async function loader() {
     const utenti = await Services.get('utenti');
     const fornitori = await Services.get('fornitori');
     const tipolavorazioni = await Services.get('tipolavorazione');
-    return { dataArray, fornitori, tipolavorazioni,utenti };
+    const fasi = await Services.get('fasi');
+    const fasitemplate = await Services.get('fasitemplate');
+    return { dataArray, fornitori, tipolavorazioni, utenti, fasi, fasitemplate };
 }
 
 function GridPage() {
-    const { dataArray, fornitori, tipolavorazioni,utenti } = useLoaderData();
+    const { dataArray, fornitori, tipolavorazioni, utenti, fasi, fasitemplate } = useLoaderData();
     const [open, setOpen] = React.useState(false);
-
+    const [lavorazioneid, setLavorazioneid] = React.useState(0);
+    const [tipoLavorazioneid, setTipoLavorazioneid] = React.useState(0);
 
     // Creazione delle opzioni per la Select del fornitore e della tipolavorazione
     const fornitoriOptions = fornitori.map((fornitore) => fornitore.nome);
     const tipolavorazioniOptions = tipolavorazioni.map((tipolavorazione) => tipolavorazione.nome);
 
-    const handleOpenDialog = (id) => {
+    const handleOpenDialog = (lavid, tipoid) => {
         setOpen(true);
+        setLavorazioneid(lavid);
+        setTipoLavorazioneid(tipoid)
     };
 
     // Funzione per chiudere la modal dialog
@@ -47,7 +52,6 @@ function GridPage() {
             width: 80,
             editable: false
         },
-
         {
             field: 'add',
             headerName: '',
@@ -59,7 +63,7 @@ function GridPage() {
                     sx={{
                         color: 'primary.main',
                     }}
-                    onClick={() => handleOpenDialog(item.row.id)}
+                    onClick={() => handleOpenDialog(item.row.id,item.row.tipoLavorazioneId)}
                 />
             )
         },
@@ -134,11 +138,11 @@ function GridPage() {
 
     return (
         <>
-            <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={'lavorazioni'} onOpenDialog={handleOpenDialog} />
-            <Dialog open={open} onClose={handleCloseDialog} maxWidth={'xl'}>
-                <DialogTitle>Fasi della Lavorazione</DialogTitle>
+            <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={'lavorazioni'} onOpenDialog={handleOpenDialog}/>
+            <Dialog open={open} onClose={handleCloseDialog} maxWidth={'90%'} fullWidth={true} lavorazioneid={lavorazioneid} tipoLavorazioneId={ tipoLavorazioneid }>
+                <DialogTitle>Fasi della Lavorazione ({ lavorazioneid})</DialogTitle>
                 <DialogContent>
-                    <DataGridDetail utenti={utenti} tipolavorazioni={tipolavorazioni} />
+                    <DataGridDetail utenti={utenti} tipolavorazioni={tipolavorazioni} fasi={fasi} fasitemplate={fasitemplate} lavorazioneid={lavorazioneid} tipoLavorazioneId={tipoLavorazioneid} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog} color="primary">

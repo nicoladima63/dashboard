@@ -42,7 +42,9 @@ export default function GridComponent({ dataArray, columns, rowArray, controller
     const [rows, setRows] = useState(dataArray);
     const [rowModesModel, setRowModesModel] = useState({});
     const [snackbar, setSnackbar] = useState(null);
-
+    //console.log("data array", dataArray);
+    //console.log("columns", columns);
+    //console.log("rowArray", rowArray);
     useEffect(() => {
         setRows(dataArray);
     }, [dataArray]);
@@ -97,6 +99,7 @@ export default function GridComponent({ dataArray, columns, rowArray, controller
     };
 
     const processRowUpdate = async (newRow) => {
+        console.log('processRowUpdate newRow', newRow)
         try {
             if (newRow.isNew) {
                 await Services.create(controllerName, newRow);

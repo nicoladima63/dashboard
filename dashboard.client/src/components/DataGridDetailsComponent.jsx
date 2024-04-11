@@ -3,39 +3,37 @@ import { useLoaderData } from "react-router-dom";
 import Services from '../Services/Services';
 import Grid from '../components/GridComponent';
 
-export async function loader() {
-    const dataArray = await Services.get('fasi');
-    return  dataArray;
-}
 
-function DataGridDetails({ utenti,tipolavorazioni }) {
-    const dataArray = useLoaderData();
+function DataGridDetails({ utenti, tipolavorazioni, lavorazioneid, fasi, fasitemplate ,tipoLavorazioneId}) {
+    //console.log('tipolavorazionioptions',tipolavorazioni)
+    //console.log('utentiOptions',utenti)
+    //console.log('fasi', fasi)
+    //console.log('fasitemplate', fasitemplate)
+    //console.log('lavorazioneid', lavorazioneid)
+    //console.log('tipolavorazioneid', tipoLavorazioneId)
+
+    const dataArray = fasitemplate.filter((fase) => fase.tipoLavorazioneId === tipoLavorazioneId);
+    /*
+    let dataArray = [];
+     dataArray=fasitemplate.forEach((fase) => {
+        if (fase.tipoLavorazioneId === lavorazioneid) {
+            dataArray.push(lavorazione);
+        }
+    });
+    */
+    //console.log('grid details dataArray', dataArray)
     const utentiOptions = utenti.map((utente) => utente.nome);
     const tipoLavorazioniOptions = tipolavorazioni.map((lavorazione) => lavorazione.nome); // Modifica
-    console.log(tipoLavorazioniOptions)
-    console.log(utentiOptions)
-    console.log(dataArray)
+
 
     const columns = [
         {
-            field: 'id',
+            filed: 'tipoLavorazioneId',
             headerName: 'ID',
-            width: 80,
-            editable: false
-        },
-        {
-            field: 'tipoLavorazioneId',
-            headerName: 'tipoLavorazioneId',
-            width: 80,
-            editable: false
-        },
-        {
-            field: 'tipoLavorazione',
-            headerName: 'Tipo Lavorazione',
-            width: 280,
-            type: 'singleSelect',
-            valueOptions: tipoLavorazioniOptions,
-            editable: true,
+            width: 70,
+            align: 'center',
+            headerAlign: 'center',
+
         },
         {
             field: 'nome',
@@ -52,27 +50,8 @@ function DataGridDetails({ utenti,tipolavorazioni }) {
             editable: true,
         },
         {
-            field: 'quando',
-            headerName: 'Quando',
-            type: 'date',
-            width: 180,
-            editable: true,
-            valueGetter: (params) => {
-                // Creazione di una data considerando l'ora locale
-                const localDate = new Date(params.value);
-                // Controllo se l'ora legale è attiva
-                const isDaylightSavingTime = localDate.getTimezoneOffset() < new Date(localDate.getFullYear(), 5, 1).getTimezoneOffset();
-                // Se l'ora legale è attiva, aggiungi un'ora alla data
-                if (isDaylightSavingTime) {
-                    localDate.setHours(localDate.getHours() + 1);
-                }
-
-                return localDate;
-            },
-        },
-        {
-            field: 'fatto',
-            headerName: 'Fatto',
+            field: 'eseguita',
+            headerName: 'Eseguita',
             type: 'boolean',
             width: 80,
             align: 'center',
@@ -80,7 +59,7 @@ function DataGridDetails({ utenti,tipolavorazioni }) {
             editable: true,
         },
     ];
-    const rowArray = { id: 0, tipoLavorazioneId: 0, tipoLavorazione: '', nome: '', chilafa: '', quando: new Date(), fatto: false, isNew: true }
+    const rowArray = { id: 0,tipoLavorazioneId: tipoLavorazioneId, nome: '', chilafa: '', quando: new Date(), eseguita: false, isNew: true }
     return (
         <Grid dataArray={dataArray} columns={columns} rowArray={rowArray} controllerName={'fasi'} />
     );

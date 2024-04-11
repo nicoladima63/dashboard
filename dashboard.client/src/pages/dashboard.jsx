@@ -17,8 +17,9 @@ export async function loader() {
     const tipolavorazioni = await Services.get('tipolavorazione');
     const lavorazioni = await Services.get('lavorazioni');
     const utenti = await Services.get('utenti');
+    const fasi = await Services.get('fasi');
     const fornitori = await Services.get('fornitori');
-    return { tipolavorazioni, lavorazioni, utenti, fornitori };
+    return { tipolavorazioni, lavorazioni, utenti, fornitori,fasi };
 }
 
 // Funzione per formattare la data nel formato desiderato
@@ -33,8 +34,8 @@ function formatData(dataString) {
 }
 
 function Dashboard() {
-    const { tipolavorazioni, utenti, fornitori, lavorazioni } = useLoaderData();
-
+    const { tipolavorazioni, utenti, fornitori, lavorazioni,fasi } = useLoaderData();
+    
     // Verifica se tutti gli utenti sono soddisfatti
     const tuttiSoddisfatti = fornitori.length > 0 && utenti.length > 0 && tipolavorazioni.length > 0 && lavorazioni.length > 0;
     console.log(tuttiSoddisfatti)
@@ -90,6 +91,11 @@ function Dashboard() {
                                         </CardContent>
                                         <CardActions>
                                             <Button size="small">Learn More</Button>
+                                            <ul>
+                                                {fasi.filter(fase => fase.lavorazioneid === lavorazione.id).map(faseFiltrata => (
+                                                    <li key={faseFiltrata.id}>{faseFiltrata.nome}</li>
+                                                ))}
+                                            </ul>
                                         </CardActions>
                                     </Card>
                                 </Grid>

@@ -5,6 +5,7 @@ import Root from "./routes/root";
 import ErrorPage from "./error-page";
 import Dashboard, {loader as dashboardLoader } from "./pages/dashboard";
 import Lavorazioni, { loader as lavorazioniLoader } from "./pages/Lavorazioni";
+import LavorazioniAddFasi, { loader as lavorazioniAddFasiLoader } from "./pages/LavorazioniAddFasi";
 import TipoLavorazioni, { loader as tipoLavorazioniLoader } from "./pages/TipoLavorazione";
 import Fasi, { loader as fasiLoader } from "./pages/Fasi";
 import FasiTemplate, { loader as fasiTemplateLoader } from "./pages/FasiTemplate";
@@ -27,6 +28,11 @@ const router = createBrowserRouter([
                 path: "/pages/lavorazioni",
                 element: <Lavorazioni />,
                 loader: lavorazioniLoader
+            },
+            {
+                path: "/pages/lavorazioniAddFasi",
+                element: <LavorazioniAddFasi />,
+                loader: lavorazioniAddFasiLoader
             },
             {
                 path: "/pages/fornitori",

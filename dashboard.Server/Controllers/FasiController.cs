@@ -93,7 +93,7 @@ namespace WebApiSQLite.Controllers
             _context.Fasi.Add(fase);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetById", new { id = fase.Id }, fase);
+            return NoContent();
         }
 
         // DELETE: api/Fasi/5
