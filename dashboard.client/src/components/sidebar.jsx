@@ -63,6 +63,11 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
                         <BsMenuButtonWideFill className='icon' /> Grid
                     </Link>
                 </li>
+                <li className='sidebar-list-item'>
+                    <Link to={`/pages/gestioni`}>
+                        <BsMenuButtonWideFill className='icon' /> Gestioni
+                    </Link>
+                </li>
 
             </ul>
         </aside>

@@ -10,7 +10,8 @@ import TipoLavorazioni, { loader as tipoLavorazioniLoader } from "./pages/TipoLa
 import Fasi, { loader as fasiLoader } from "./pages/Fasi";
 import FasiTemplate, { loader as fasiTemplateLoader } from "./pages/FasiTemplate";
 import Fornitori, { loader as fornitoriLoader} from "./pages/Fornitori";
-import Utenti, { loader as userLoader} from "./pages/Utenti";
+import Utenti, { loader as userLoader } from "./pages/Utenti";
+import Gestioni, { loader as gestioniLoader } from "./pages/Gestioni";
 import Grid, { loader as gridLoader } from "./pages/Grid";
 
 const router = createBrowserRouter([
@@ -63,6 +64,11 @@ const router = createBrowserRouter([
                 path: "/pages/grid",
                 element: <Grid />,
                 loader: gridLoader
+            },
+            {
+                path: "/pages/gestioni",
+                element: <Gestioni />,
+                loader: gestioniLoader
             },
 
         ],
