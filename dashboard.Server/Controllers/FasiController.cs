@@ -84,16 +84,16 @@ namespace WebApiSQLite.Controllers
         // POST: api/Fasi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Fasi>> Create(Fasi fasi)
+        public async Task<ActionResult<Fasi>> Create(Fasi fase)
         {
           if (_context.Fasi == null)
           {
               return Problem("Entity set 'DataContext.Fasi'  is null.");
           }
-            _context.Fasi.Add(fasi);
+            _context.Fasi.Add(fase);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFasi", new { id = fasi.Id }, fasi);
+            return CreatedAtAction("GetById", new { id = fase.Id }, fase);
         }
 
         // DELETE: api/Fasi/5
