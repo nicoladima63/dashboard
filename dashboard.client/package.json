@@ -14,7 +14,7 @@
     "@emotion/styled": "^11.11.5",
     "@mui/x-data-grid": "^6.19.8",
     "@mui/x-data-grid-generator": "^6.19.8",
-    "axios": "^1.6.7",
+    "axios": "^1.8.2",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.4",
     "react": "^18.2.0",
